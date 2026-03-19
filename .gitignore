@@ -1,0 +1,19 @@
+# 1. Entornos Virtuales (Nunca subir porque pesan gigas y dependen del PC)
+venv/
+env/
+
+# 2. Caché de Python (Archivos basura que Python regenera solo)
+__pycache__/
+*.pyc
+*.pyo
+
+# 3. Variables de Entorno (¡CRÍTICO PARA TU SEGURIDAD!)
+# Aquí guardaremos las contraseñas de tu Base de Datos y las API Keys de la IA.
+.env
+
+# 4. Archivos de tu IDE (Antigravity/VS Code crea configuraciones locales)
+.vscode/
+
+# 5. Archivos del Sistema Operativo
+.DS_Store
+Thumbs.db
