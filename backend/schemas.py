@@ -15,10 +15,10 @@ class IngestaLlamadaColly(BaseModel):
     fecha_vencimiento: Optional[str] = Field(default=None, alias="Fecha de vencimiento")
     
     # Estos campos son opcionales porque a veces podrían no venir
-    dias_mora: Optional[str] = Field(default=None, alias="Días de mora")
-    due_balance: Optional[str] = Field(default=None, alias="Saldo vencido")
-    invoiced_balance: Optional[str] = Field(default=None, alias="Saldo facturado")
-    total_balance: Optional[str] = Field(default=None, alias="Saldo total")
+    dias_mora: Optional[int] = Field(default=None, alias="Días de mora")
+    due_balance: Optional[float] = Field(default=None, alias="Saldo vencido")
+    invoiced_balance: Optional[float] = Field(default=None, alias="Saldo facturado")
+    total_balance: Optional[float] = Field(default=None, alias="Saldo total")
 
     # Si Colly envía basura extra (como UUID o Hora envio), FastAPI la ignorará en vez de fallar
     # Configuración especial para manejar los nombres de campo con espacios
