@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Depends
 from sqlmodel import Session, select
 from contextlib import asynccontextmanager
-
+from services import ejecutar_auditoria_ia
+from models import Cliente, Llamada, Evaluacion
 # Importamos nuestros propios archivos
 from database import engine, get_session, create_db_and_tables
-from models import Cliente, Llamada
 from schemas import IngestaLlamadaColly
 
 # --- 1. CICLO DE VIDA DEL SERVIDOR ---
@@ -79,7 +79,54 @@ def recibir_llamada(
     db.commit()
     db.refresh(nueva_llamada)
 
-    # PASO E: Responder éxito al sistema que envió la llamada
+    # PASO E: LA MAGIA DE LA IA (Se ejecuta automáticamente)
+    # =========================================================
+    try:
+        print(f"Iniciando auditoría IA para el cliente: {cliente_bd.nombre_empresa}")
+        
+        # 1. Llamamos a Gemini
+        resultado_ia = ejecutar_auditoria_ia(
+            transcripcion=nueva_llamada.transcripcion,
+            llamada=nueva_llamada,
+            cliente=cliente_bd
+        )
+        
+        # 2. Sumamos los puntos obtenidos
+        puntos = (
+            resultado_ia.get("Saludo", 0) +
+            resultado_ia.get("Confirmacion_identidad", 0) +
+            resultado_ia.get("Entrega_mensaje", 0) +
+            resultado_ia.get("Negociacion", 0) +
+            resultado_ia.get("Agenda_compromiso", 0) +
+            resultado_ia.get("Cierre", 0)
+        )
+
+        # 3. Guardamos el resultado de la IA
+        nueva_evaluacion = Evaluacion(
+            llamada_id=nueva_llamada.id,
+            saludo=(resultado_ia.get("Saludo") == 1),
+            confirmacion_identidad=(resultado_ia.get("Confirmacion_identidad") == 1),
+            entrega_mensaje=(resultado_ia.get("Entrega_mensaje") == 1),
+            negociacion=(resultado_ia.get("Negociacion") == 1),
+            agenda_compromiso=(resultado_ia.get("Agenda_compromiso") == 1),
+            cierre=(resultado_ia.get("Cierre") == 1),
+            estatus_coherente=(resultado_ia.get("Estatus_coherente") == 1),
+            resumen_auditoria=resultado_ia.get("Resumen", "Sin resumen"),
+            estado_auditoria=resultado_ia.get("Estatus_detectado", "Desconocido"),
+            puntaje_logrado=puntos
+        )
+        
+        db.add(nueva_evaluacion)
+        db.commit()
+        print("Evaluación de IA guardada con éxito.")
+        
+    except Exception as e:
+        # Usamos try/except porque si Gemini se cae o el internet falla, 
+        # no queremos que se pierda la llamada que ya guardamos en el Paso D.
+        print(f"Error en la evaluación de IA: {e}")
+    # =========================================================
+
+    # PASO F: Responder éxito al sistema que envió la llamada
     return {
         "estado": "éxito",
         "mensaje": "Llamada procesada y guardada correctamente",
