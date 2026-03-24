@@ -8,7 +8,7 @@ load_dotenv()
 # 1. Configuramos la IA
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-def ejecutar_auditoria_ia(transcripcion_texto, datos_llamada):
+def ejecutar_auditoria_ia(transcripcion, llamada, cliente):
     model = genai.GenerativeModel('gemini-1.5-flash')
 
     # 1. ARMAMOS EL GUION DINÁMICO CON LOS DATOS DE LA BASE DE DATOS
