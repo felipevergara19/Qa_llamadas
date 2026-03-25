@@ -16,6 +16,7 @@ class Cliente(SQLModel, table=True):
     guion_saludo: Optional[str] = None
     guion_entrega_mensaje: Optional[str] = None
     guion_negociacion: Optional[str] = None
+    guion_agenda_compromiso: Optional[str] = None
     guion_cierre: Optional[str] = None
     
     # Reglas extras (Severidades, Fix transversales)

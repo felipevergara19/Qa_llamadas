@@ -9,7 +9,7 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def ejecutar_auditoria_ia(transcripcion, llamada, cliente):
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
 
     # 1. ARMAMOS EL GUION DINÁMICO CON LOS DATOS DE LA BASE DE DATOS
     guion_dinamico = f"""
@@ -23,13 +23,13 @@ def ejecutar_auditoria_ia(transcripcion, llamada, cliente):
     """
     
     # 2. Tu Prompt Maestro (lo guardamos en una variable)
-    prompt = """
+    prompt = f"""
     Eres un auditor automático de calidad de llamadas de cobranza de COLEKTIA.
     
     DATOS DE LA LLAMADA:
     - ID: {llamada.id}
     - Cliente: {cliente.nombre_empresa}
-    - Estatus original: {llamada.estatus_original}
+    - Estatus original: {llamada.metadatos_json.get('estatus_colly', 'Desconocido')}
     
     GUION ESPECÍFICO PARA ESTE CLIENTE:
     {guion_dinamico}
@@ -174,7 +174,7 @@ Clasifica el tipo de llamada en uno de los siguientes **estatus**. Lee con mucho
 Equivocado:
 ÚNICAMENTE si la persona indica verbal y explícitamente que NO es el titular o que el número es incorrecto.
 Frases típicas: "se equivocó", "no lo conozco", "no vive aquí", "número errado", "no soy yo".
-⛔ IMPORTANTE: Si el cliente dice "No me interesa", "No quiero hablar" o simplemente cuelga sin hablar, NO ES EQUIVOCADO.
+IMPORTANTE: Si el cliente dice "No me interesa", "No quiero hablar" o simplemente cuelga sin hablar, NO ES EQUIVOCADO.
 
 Rechazado:
 El cliente corta la llamada (cuelga) o se niega verbalmente a escuchar el mensaje/hablar, PERO sin negar su identidad.
@@ -239,8 +239,19 @@ Ejemplo de salida:
 
     """
     
-    # 3. Limpiamos y convertimos la respuesta a un Diccionario de Python
-    # (A veces la IA pone ```json ... ```, hay que quitarlo)
+   # 3. Llamamos a Gemini (¡Esta línea es la que faltaba!)
     response = model.generate_content(prompt)
-    limpio = response.text.replace("```json", "").replace("```", "").strip()
+    texto_respuesta = response.text.strip()
+    
+    # 4. Limpieza segura (solo quita la basura si está al inicio o al final)
+    if texto_respuesta.startswith("```json"):
+        texto_respuesta = texto_respuesta[7:]
+    if texto_respuesta.startswith("```"):
+        texto_respuesta = texto_respuesta[3:]
+    if texto_respuesta.endswith("```"):
+        texto_respuesta = texto_respuesta[:-3]
+    
+    limpio = texto_respuesta.strip()
+    
+    # 5. Convertimos a diccionario de Python
     return json.loads(limpio)

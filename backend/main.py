@@ -104,13 +104,12 @@ def recibir_llamada(
         # 3. Guardamos el resultado de la IA
         nueva_evaluacion = Evaluacion(
             llamada_id=nueva_llamada.id,
-            saludo=(resultado_ia.get("Saludo") == 1),
+            saludo_inicial=(resultado_ia.get("Saludo") == 1),
             confirmacion_identidad=(resultado_ia.get("Confirmacion_identidad") == 1),
             entrega_mensaje=(resultado_ia.get("Entrega_mensaje") == 1),
             negociacion=(resultado_ia.get("Negociacion") == 1),
             agenda_compromiso=(resultado_ia.get("Agenda_compromiso") == 1),
             cierre=(resultado_ia.get("Cierre") == 1),
-            estatus_coherente=(resultado_ia.get("Estatus_coherente") == 1),
             resumen_auditoria=resultado_ia.get("Resumen", "Sin resumen"),
             estado_auditoria=resultado_ia.get("Estatus_detectado", "Desconocido"),
             puntaje_logrado=puntos
