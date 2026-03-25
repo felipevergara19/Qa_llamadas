@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Depends
-from sqlmodel import Session, select
+from fastapi import FastAPI, Depends, HTTPException
+from sqlmodel import Session, select, func
 from contextlib import asynccontextmanager
 from services import ejecutar_auditoria_ia
 from models import Cliente, Llamada, Evaluacion
@@ -131,4 +131,91 @@ def recibir_llamada(
         "mensaje": "Llamada procesada y guardada correctamente",
         "id_interno": nueva_llamada.id,
         "empresa": cliente_bd.nombre_empresa
+    }
+
+# --- 3. HU19: VISTA DETALLE DE AUDITORÍA ---
+@app.get("/api/v1/evaluaciones/{llamada_id}", summary="Obtener detalle completo de una auditoría")
+def obtener_detalle_evaluacion(
+    llamada_id: int, 
+    db: Session = Depends(get_session)
+):
+    """
+    Busca una llamada por su ID y devuelve toda su información junto con 
+    la evaluación de la IA y los datos del cliente.
+    """
+    # Buscamos la Llamada, la Evaluación y el Cliente uniendo las tablas
+    statement = (
+        select(Llamada, Evaluacion, Cliente)
+        .join(Evaluacion)
+        .join(Cliente, Llamada.cliente_id == Cliente.id)
+        .where(Llamada.id == llamada_id)
+    )
+    
+    resultado = db.exec(statement).first()
+
+    # Si alguien busca un ID que no existe, lanzamos un error 404
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Evaluación no encontrada")
+
+    # Separamos los 3 objetos que nos devolvió la base de datos
+    llamada, evaluacion, cliente = resultado
+
+    # Empaquetamos todo en un JSON para el Frontend
+    return {
+        "id_auditoria": evaluacion.id,
+        "cliente": cliente.nombre_empresa,
+        "fecha_llamada": llamada.metadatos_json.get("fecha_llamada"),
+        "datos_colly": {
+            "estatus_original": llamada.metadatos_json.get("estatus_colly"),
+            "dias_mora": llamada.metadatos_json.get("dias_mora"),
+            "deuda_total": llamada.metadatos_json.get("balances", {}).get("total")
+        },
+        "resultados_ia": {
+            "estatus_detectado": evaluacion.estado_auditoria,
+            # Quitamos estatus_coherente porque no está en la BD
+            "puntaje_total": evaluacion.puntaje_logrado,
+            "resumen_analisis": evaluacion.resumen_auditoria
+        },
+        "rubrica_detallada": {
+            "saludo": evaluacion.saludo_inicial, # Corregido a saludo_inicial
+            "confirmacion_identidad": evaluacion.confirmacion_identidad,
+            "entrega_mensaje": evaluacion.entrega_mensaje,
+            "negociacion": evaluacion.negociacion,
+            "agenda_compromiso": evaluacion.agenda_compromiso,
+            "cierre": evaluacion.cierre
+        },
+        "transcripcion_completa": llamada.transcripcion
+    }
+
+# --- 4. HU17: DASHBOARD DE KPIs GLOBALES ---
+@app.get("/api/v1/dashboard", summary="Obtener métricas globales para gráficos")
+def obtener_kpis_dashboard(db: Session = Depends(get_session)):
+    """
+    Calcula los KPIs generales de toda la operación:
+    Total de llamadas, calidad promedio y distribución de estatus.
+    """
+    # 1. Total de llamadas evaluadas
+    total_evaluaciones = db.exec(select(func.count(Evaluacion.id))).first() or 0
+
+    # 2. Promedio de calidad (Puntaje)
+    promedio_puntaje = db.exec(select(func.avg(Evaluacion.puntaje_logrado))).first() or 0.0
+
+    # 3. Distribución de Estatus (Agrupamos y contamos)
+    statement_estatus = (
+        select(Evaluacion.estado_auditoria, func.count(Evaluacion.id))
+        .group_by(Evaluacion.estado_auditoria)
+    )
+    distribucion_bd = db.exec(statement_estatus).all()
+    
+    # Convertimos el resultado de la BD a un diccionario limpio
+    distribucion_dict = {estatus: cantidad for estatus, cantidad in distribucion_bd}
+
+    # Empaquetamos todo para el gráfico del frontend
+    return {
+        "kpis_globales": {
+            "total_llamadas_auditadas": total_evaluaciones,
+            "calidad_promedio": round(promedio_puntaje, 2), # Redondeamos a 2 decimales
+            "puntaje_maximo_posible": 6 # Son 6 pasos en la rúbrica
+        },
+        "distribucion_estatus": distribucion_dict
     }

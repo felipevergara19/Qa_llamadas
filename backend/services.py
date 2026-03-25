@@ -239,7 +239,7 @@ Ejemplo de salida:
 
     """
     
-   # 3. Llamamos a Gemini (¡Esta línea es la que faltaba!)
+   # 3. Llamamos a Gemini 
     response = model.generate_content(prompt)
     texto_respuesta = response.text.strip()
     
