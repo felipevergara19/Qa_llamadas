@@ -262,3 +262,45 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         }
     )
 
+# --- HU07: LISTADO HISTÓRICO DE LLAMADAS ---
+@app.get("/api/v1/llamadas", summary="Listado histórico de llamadas auditadas")
+def listar_llamadas(db: Session = Depends(get_session)):
+    """
+    Devuelve una lista resumida de todas las llamadas procesadas,
+    ordenadas de la más reciente a la más antigua.
+    Ideal para la tabla del Dashboard (Frontend).
+    """
+    # 1. Hacemos la consulta uniendo la Llamada con su Evaluación (si la tiene)
+    # y ordenamos por el ID de forma descendente (los más nuevos primero)
+    statement = (
+        select(Llamada, Evaluacion)
+        .join(Evaluacion, Llamada.id == Evaluacion.llamada_id, isouter=True) 
+        .order_by(Llamada.id.desc())
+    )
+    
+    resultados_bd = db.exec(statement).all()
+
+    # 2. Formateamos la respuesta para que el Frontend la lea fácil
+    lista_historial = []
+    
+    for llamada, evaluacion in resultados_bd:
+        # Extraemos la empresa y fecha desde los metadatos JSON de forma segura
+        metadatos = llamada.metadatos_json or {}
+        
+        item = {
+            "id_llamada": llamada.id,
+            "empresa": metadatos.get("Empresa", "Desconocida"),
+            "fecha_llamada": metadatos.get("Fecha", "Sin fecha"),
+            "estatus_original": metadatos.get("Estatus", "Desconocido"),
+            "resultados_ia": {
+                "estatus_ia": evaluacion.estado_auditoria if evaluacion else "Pendiente",
+                "puntaje": evaluacion.puntaje_logrado if evaluacion else 0
+            }
+        }
+        lista_historial.append(item)
+
+    # 3. Devolvemos el total y la lista
+    return {
+        "total_registros": len(lista_historial),
+        "data": lista_historial
+    }
