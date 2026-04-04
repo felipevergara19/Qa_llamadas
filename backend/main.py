@@ -1,4 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+import logging
 from sqlmodel import Session, select, func
 from contextlib import asynccontextmanager
 from services import ejecutar_auditoria_ia
@@ -6,6 +9,19 @@ from models import Cliente, Llamada, Evaluacion
 # Importamos nuestros propios archivos
 from database import engine, get_session, create_db_and_tables
 from schemas import IngestaLlamadaColly
+
+
+# --- CONFIGURACIÓN DE LOGS AVANZADA ---
+# Esto creará un archivo llamado "api_seguridad.log" en tu carpeta
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("api_seguridad.log", encoding="utf-8"), # Lo guarda en un archivo físico
+        logging.StreamHandler() # También lo sigue mostrando en tu terminal
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # --- 1. CICLO DE VIDA DEL SERVIDOR ---
 # Esto se ejecuta una sola vez al encender la API. 
@@ -219,3 +235,30 @@ def obtener_kpis_dashboard(db: Session = Depends(get_session)):
         },
         "distribucion_estatus": distribucion_dict
     }
+
+# --- HU06: VALIDACIÓN DE ESQUEMA (Intercepción de errores) ---
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """
+    Atrapa cualquier JSON mal formado antes de que toque la base de datos,
+    registra la alerta en el log del sistema y devuelve un error 422 claro.
+    """
+    # 1. Extraemos qué fue exactamente lo que intentaron enviar
+    cuerpo_recibido = await request.body()
+    
+    # 2. Generamos el LOG de alerta para el sistema/terminal
+    logger.error("🚨 [HU06 ALERTA] Se rechazó un JSON mal formado.")
+    logger.error(f"URL de intento: {request.url}")
+    logger.error(f"Errores detallados: {exc.errors()}")
+    logger.error(f"JSON recibido: {cuerpo_recibido.decode('utf-8')}")
+    
+    # 3. Devolvemos la respuesta al sistema origen (ej. Colly) rechazando la carga
+    return JSONResponse(
+        status_code=422,
+        content={
+            "estado": "error",
+            "mensaje": "Ingesta rechazada. El JSON no cumple con la estructura requerida.",
+            "detalles": exc.errors()
+        }
+    )
+
