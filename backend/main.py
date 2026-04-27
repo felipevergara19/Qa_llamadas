@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import logging
 from sqlmodel import Session, select, func
 from contextlib import asynccontextmanager
 from services import ejecutar_auditoria_ia
-from models import Cliente, Llamada, Evaluacion
+from models import Cliente, Llamada, Evaluacion, Criterio, Rubrica
 # Importamos nuestros propios archivos
 from database import engine, get_session, create_db_and_tables
 from schemas import IngestaLlamadaColly
