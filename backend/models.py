@@ -1,5 +1,5 @@
-from typing import Optional, Dict, Any
-from sqlmodel import Field, SQLModel, Column, JSON
+from typing import Optional, Dict, Any, List
+from sqlmodel import Field, SQLModel, Column, JSON, Relationship
 from sqlalchemy import Column, Integer, ForeignKey, JSON, Float
 
 # --- TABLA 1: CLIENTES (Empresas como Sistecredito o Rapicredit) ---
@@ -60,3 +60,18 @@ class GuionCliente(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nombre: str = Field(index=True, unique=True) # Ejemplo: "VANA", "KUESKI"
     guion_auditoria: str # Aquí guardamos las reglas específicas que leíste en tu prompt
+
+class Criterio(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nombre: str  # Ej: "Saludo Inicial"
+    descripcion: str  # Lo que la IA debe buscar
+    peso: int = Field(default=1) # HU10: Importancia del punto
+    rubrica_id: int = Field(foreign_key="rubrica.id")
+    rubrica: "Rubrica" = Relationship(back_populates="criterios")
+
+class Rubrica(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nombre: str  # Ej: "Cobranza Temprana - Access"
+    empresa: str # Para vincular con la llamada
+    activo: bool = Field(default=True)
+    criterios: List[Criterio] = Relationship(back_populates="rubrica")

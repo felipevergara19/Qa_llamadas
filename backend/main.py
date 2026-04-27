@@ -9,7 +9,8 @@ from models import Cliente, Llamada, Evaluacion
 # Importamos nuestros propios archivos
 from database import engine, get_session, create_db_and_tables
 from schemas import IngestaLlamadaColly
-
+from typing import List
+from pydantic import BaseModel
 
 # --- CONFIGURACIÓN DE LOGS AVANZADA ---
 # Esto creará un archivo llamado "api_seguridad.log" en tu carpeta
@@ -22,6 +23,11 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+class CriterioCreate(BaseModel):
+    nombre: str
+    descripcion: str
+    peso: int = 1
 
 # --- 1. CICLO DE VIDA DEL SERVIDOR ---
 # Esto se ejecuta una sola vez al encender la API. 
@@ -304,3 +310,24 @@ def listar_llamadas(db: Session = Depends(get_session)):
         "total_registros": len(lista_historial),
         "data": lista_historial
     }
+
+@app.post("/api/v1/rubricas", summary="HU09: Crear una nueva rúbrica con criterios")
+def crear_rubrica(nombre: str, empresa: str, puntos: List[CriterioCreate], db: Session = Depends(get_session)):
+    # 1. Crear la cabecera de la rúbrica
+    nueva_rubrica = Rubrica(nombre=nombre, empresa=empresa)
+    db.add(nueva_rubrica)
+    db.commit()
+    db.refresh(nueva_rubrica)
+    
+    # 2. Crear los criterios asociados
+    for p in puntos:
+        nuevo_criterio = Criterio(
+            nombre=p.nombre,
+            descripcion=p.descripcion,
+            peso=p.peso,
+            rubrica_id=nueva_rubrica.id
+        )
+        db.add(nuevo_criterio)
+    
+    db.commit()
+    return {"mensaje": "Rúbrica creada con éxito", "id": nueva_rubrica.id}

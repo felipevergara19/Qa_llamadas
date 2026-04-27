@@ -237,3 +237,315 @@ FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente 
 WHERE llamada.id = %(id_3)s
 2026-04-04 13:12:40,435 - INFO - [generated in 0.00173s] {'id_3': 3}
 2026-04-04 13:12:40,440 - INFO - ROLLBACK
+2026-04-04 15:13:49,984 - INFO - select pg_catalog.version()
+2026-04-04 15:13:49,985 - INFO - [raw sql] {}
+2026-04-04 15:13:49,988 - INFO - select current_schema()
+2026-04-04 15:13:49,989 - INFO - [raw sql] {}
+2026-04-04 15:13:49,991 - INFO - show standard_conforming_strings
+2026-04-04 15:13:49,992 - INFO - [raw sql] {}
+2026-04-04 15:13:49,993 - INFO - BEGIN (implicit)
+2026-04-04 15:13:50,001 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:13:50,002 - INFO - [generated in 0.00173s] {'table_name': 'cliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:13:50,009 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:13:50,010 - INFO - [cached since 0.009264s ago] {'table_name': 'llamada', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:13:50,012 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:13:50,013 - INFO - [cached since 0.01311s ago] {'table_name': 'evaluacion', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:13:50,016 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:13:50,017 - INFO - [cached since 0.01658s ago] {'table_name': 'guioncliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:13:50,019 - INFO - COMMIT
+2026-04-04 15:14:48,081 - INFO - select pg_catalog.version()
+2026-04-04 15:14:48,082 - INFO - [raw sql] {}
+2026-04-04 15:14:48,084 - INFO - select current_schema()
+2026-04-04 15:14:48,084 - INFO - [raw sql] {}
+2026-04-04 15:14:48,085 - INFO - show standard_conforming_strings
+2026-04-04 15:14:48,086 - INFO - [raw sql] {}
+2026-04-04 15:14:48,087 - INFO - BEGIN (implicit)
+2026-04-04 15:14:48,093 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:14:48,094 - INFO - [generated in 0.00086s] {'table_name': 'cliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:14:48,098 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:14:48,100 - INFO - [cached since 0.006242s ago] {'table_name': 'llamada', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:14:48,102 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:14:48,102 - INFO - [cached since 0.009241s ago] {'table_name': 'evaluacion', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:14:48,105 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:14:48,106 - INFO - [cached since 0.01278s ago] {'table_name': 'guioncliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:14:48,109 - INFO - COMMIT
+2026-04-04 15:16:30,245 - INFO - select pg_catalog.version()
+2026-04-04 15:16:30,246 - INFO - [raw sql] {}
+2026-04-04 15:16:30,247 - INFO - select current_schema()
+2026-04-04 15:16:30,248 - INFO - [raw sql] {}
+2026-04-04 15:16:30,250 - INFO - show standard_conforming_strings
+2026-04-04 15:16:30,251 - INFO - [raw sql] {}
+2026-04-04 15:16:30,253 - INFO - BEGIN (implicit)
+2026-04-04 15:16:30,258 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:16:30,259 - INFO - [generated in 0.00124s] {'table_name': 'cliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:16:30,263 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:16:30,264 - INFO - [cached since 0.006396s ago] {'table_name': 'llamada', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:16:30,266 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:16:30,267 - INFO - [cached since 0.009217s ago] {'table_name': 'evaluacion', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:16:30,269 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:16:30,269 - INFO - [cached since 0.01159s ago] {'table_name': 'guioncliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:16:30,271 - INFO - COMMIT
+2026-04-04 15:17:16,418 - INFO - select pg_catalog.version()
+2026-04-04 15:17:16,419 - INFO - [raw sql] {}
+2026-04-04 15:17:16,421 - INFO - select current_schema()
+2026-04-04 15:17:16,422 - INFO - [raw sql] {}
+2026-04-04 15:17:16,424 - INFO - show standard_conforming_strings
+2026-04-04 15:17:16,424 - INFO - [raw sql] {}
+2026-04-04 15:17:16,426 - INFO - BEGIN (implicit)
+2026-04-04 15:17:16,435 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:17:16,436 - INFO - [generated in 0.00148s] {'table_name': 'cliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:17:16,440 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:17:16,441 - INFO - [cached since 0.006523s ago] {'table_name': 'llamada', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:17:16,443 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:17:16,444 - INFO - [cached since 0.009473s ago] {'table_name': 'evaluacion', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:17:16,446 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:17:16,447 - INFO - [cached since 0.01267s ago] {'table_name': 'guioncliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:17:16,449 - INFO - COMMIT
+2026-04-04 15:23:01,312 - INFO - select pg_catalog.version()
+2026-04-04 15:23:01,312 - INFO - [raw sql] {}
+2026-04-04 15:23:01,314 - INFO - select current_schema()
+2026-04-04 15:23:01,315 - INFO - [raw sql] {}
+2026-04-04 15:23:01,316 - INFO - show standard_conforming_strings
+2026-04-04 15:23:01,317 - INFO - [raw sql] {}
+2026-04-04 15:23:01,318 - INFO - BEGIN (implicit)
+2026-04-04 15:23:01,322 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:23:01,322 - INFO - [generated in 0.00068s] {'table_name': 'cliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:23:01,327 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:23:01,328 - INFO - [cached since 0.006094s ago] {'table_name': 'llamada', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:23:01,330 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:23:01,331 - INFO - [cached since 0.008811s ago] {'table_name': 'evaluacion', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:23:01,332 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:23:01,332 - INFO - [cached since 0.01038s ago] {'table_name': 'guioncliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:23:01,334 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:23:01,335 - INFO - [cached since 0.01296s ago] {'table_name': 'criterio', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:23:01,337 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-04 15:23:01,338 - INFO - [cached since 0.01623s ago] {'table_name': 'rubrica', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-04 15:23:01,340 - INFO - 
+CREATE TABLE rubrica (
+	id SERIAL NOT NULL, 
+	nombre VARCHAR NOT NULL, 
+	empresa VARCHAR NOT NULL, 
+	activo BOOLEAN NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+2026-04-04 15:23:01,343 - INFO - [no key 0.00275s] {}
+2026-04-04 15:23:01,410 - INFO - 
+CREATE TABLE criterio (
+	id SERIAL NOT NULL, 
+	nombre VARCHAR NOT NULL, 
+	descripcion VARCHAR NOT NULL, 
+	peso INTEGER NOT NULL, 
+	rubrica_id INTEGER NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(rubrica_id) REFERENCES rubrica (id)
+)
+
+
+2026-04-04 15:23:01,411 - INFO - [no key 0.00062s] {}
+2026-04-04 15:23:01,434 - INFO - COMMIT
+2026-04-06 20:37:49,333 - INFO - BEGIN (implicit)
+2026-04-06 20:37:49,518 - INFO - SELECT cliente.id, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM cliente 
+WHERE cliente.nombre_empresa = %(nombre_empresa_1)s
+2026-04-06 20:37:49,523 - INFO - [generated in 0.01014s] {'nombre_empresa_1': 'Access Finance'}
+2026-04-06 20:37:49,625 - INFO - INSERT INTO llamada (cliente_id, call_id_origen, grabacion_url, transcripcion, metadatos_json) VALUES (%(cliente_id)s, %(call_id_origen)s, %(grabacion_url)s, %(transcripcion)s, %(metadatos_json)s::JSON) RETURNING llamada.id
+2026-04-06 20:37:49,627 - INFO - [generated in 0.00227s] {'cliente_id': 1, 'call_id_origen': 'CALL-ACCESS-1001', 'grabacion_url': 'https://s3.tu-servidor.com/audios/CALL-ACCESS-1001.mp3', 'transcripcion': 'Agente: Muy buenos días, ¿hablo con el señor Carlos Martínez? Cliente: Sí, con él. Agente: Señor Carlos, le llamo de Access Finance por un saldo pend ... (143 characters truncated) ... n y deposito. Agente: Perfecto, dejaré agendada su promesa de pago para el viernes. Recuerde que esto evita cargos extra. Que tenga un excelente día.', 'metadatos_json': '{"id_colly": "CALL-ACCESS-1001", "cuenta_cliente": "77889944", "estatus_colly": "Promesa de Pago", "proveedor": "Colly", "fecha_llamada": "2026-04-07T09:15:22+00:00", "fecha_vencimiento": "2026-03-15", "dias_mora": 23, "balances": {"due": 45000.0, "invoiced": 45000.0, "total": 120000.0}}'}
+2026-04-06 20:37:49,658 - INFO - COMMIT
+2026-04-06 20:37:49,665 - INFO - BEGIN (implicit)
+2026-04-06 20:37:49,675 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json 
+FROM llamada 
+WHERE llamada.id = %(pk_1)s
+2026-04-06 20:37:49,676 - INFO - [generated in 0.00161s] {'pk_1': 4}
+2026-04-06 20:37:49,688 - INFO - SELECT cliente.id AS cliente_id, cliente.nombre_empresa AS cliente_nombre_empresa, cliente.pais AS cliente_pais, cliente.medio_de_pago AS cliente_medio_de_pago, cliente.guion_identificacion AS cliente_guion_identificacion, cliente.guion_saludo AS cliente_guion_saludo, cliente.guion_entrega_mensaje AS cliente_guion_entrega_mensaje, cliente.guion_negociacion AS cliente_guion_negociacion, cliente.guion_agenda_compromiso AS cliente_guion_agenda_compromiso, cliente.guion_cierre AS cliente_guion_cierre, cliente.reglas_adicionales AS cliente_reglas_adicionales 
+FROM cliente 
+WHERE cliente.id = %(pk_1)s
+2026-04-06 20:37:49,690 - INFO - [generated in 0.00284s] {'pk_1': 1}
+2026-04-06 20:37:56,461 - INFO - INSERT INTO evaluacion (llamada_id, saludo_inicial, confirmacion_identidad, entrega_mensaje, negociacion, agenda_compromiso, cierre, resumen_auditoria, puntaje_logrado, estado_auditoria) VALUES (%(llamada_id)s, %(saludo_inicial)s, %(confirmacion_identidad)s, %(entrega_mensaje)s, %(negociacion)s, %(agenda_compromiso)s, %(cierre)s, %(resumen_auditoria)s, %(puntaje_logrado)s, %(estado_auditoria)s) RETURNING evaluacion.id
+2026-04-06 20:37:56,462 - INFO - [generated in 0.00194s] {'llamada_id': 4, 'saludo_inicial': True, 'confirmacion_identidad': True, 'entrega_mensaje': True, 'negociacion': True, 'agenda_compromiso': True, 'cierre': True, 'resumen_auditoria': '', 'puntaje_logrado': 6, 'estado_auditoria': 'Compromiso'}
+2026-04-06 20:37:56,467 - INFO - COMMIT
+2026-04-06 20:37:56,472 - INFO - BEGIN (implicit)
+2026-04-06 20:37:56,477 - INFO - SELECT llamada.id AS llamada_id, llamada.cliente_id AS llamada_cliente_id, llamada.call_id_origen AS llamada_call_id_origen, llamada.grabacion_url AS llamada_grabacion_url, llamada.transcripcion AS llamada_transcripcion, llamada.metadatos_json AS llamada_metadatos_json 
+FROM llamada 
+WHERE llamada.id = %(pk_1)s
+2026-04-06 20:37:56,478 - INFO - [generated in 0.00205s] {'pk_1': 4}
+2026-04-06 20:37:56,482 - INFO - SELECT cliente.id AS cliente_id, cliente.nombre_empresa AS cliente_nombre_empresa, cliente.pais AS cliente_pais, cliente.medio_de_pago AS cliente_medio_de_pago, cliente.guion_identificacion AS cliente_guion_identificacion, cliente.guion_saludo AS cliente_guion_saludo, cliente.guion_entrega_mensaje AS cliente_guion_entrega_mensaje, cliente.guion_negociacion AS cliente_guion_negociacion, cliente.guion_agenda_compromiso AS cliente_guion_agenda_compromiso, cliente.guion_cierre AS cliente_guion_cierre, cliente.reglas_adicionales AS cliente_reglas_adicionales 
+FROM cliente 
+WHERE cliente.id = %(pk_1)s
+2026-04-06 20:37:56,484 - INFO - [cached since 6.796s ago] {'pk_1': 1}
+2026-04-06 20:37:56,494 - INFO - ROLLBACK
+2026-04-06 20:38:54,142 - INFO - BEGIN (implicit)
+2026-04-06 20:38:54,145 - INFO - SELECT cliente.id, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM cliente 
+WHERE cliente.nombre_empresa = %(nombre_empresa_1)s
+2026-04-06 20:38:54,147 - INFO - [cached since 64.63s ago] {'nombre_empresa_1': 'Access Finance'}
+2026-04-06 20:38:54,151 - INFO - INSERT INTO llamada (cliente_id, call_id_origen, grabacion_url, transcripcion, metadatos_json) VALUES (%(cliente_id)s, %(call_id_origen)s, %(grabacion_url)s, %(transcripcion)s, %(metadatos_json)s::JSON) RETURNING llamada.id
+2026-04-06 20:38:54,153 - INFO - [cached since 64.53s ago] {'cliente_id': 1, 'call_id_origen': 'CALL-ACCESS-1001', 'grabacion_url': 'https://s3.tu-servidor.com/audios/CALL-ACCESS-1001.mp3', 'transcripcion': 'Agente: Muy buenos días, ¿hablo con el señor Carlos Martínez? Cliente: Sí, con él. Agente: Señor Carlos, le llamo de Access Finance por un saldo pend ... (143 characters truncated) ... n y deposito. Agente: Perfecto, dejaré agendada su promesa de pago para el viernes. Recuerde que esto evita cargos extra. Que tenga un excelente día.', 'metadatos_json': '{"id_colly": "CALL-ACCESS-1001", "cuenta_cliente": "77889944", "estatus_colly": "Promesa de Pago", "proveedor": "Colly", "fecha_llamada": "2026-04-07T09:15:22+00:00", "fecha_vencimiento": "2026-03-15", "dias_mora": 23, "balances": {"due": 45000.0, "invoiced": 45000.0, "total": 120000.0}}'}
+2026-04-06 20:38:54,159 - INFO - COMMIT
+2026-04-06 20:38:54,163 - INFO - BEGIN (implicit)
+2026-04-06 20:38:54,165 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json 
+FROM llamada 
+WHERE llamada.id = %(pk_1)s
+2026-04-06 20:38:54,166 - INFO - [cached since 64.49s ago] {'pk_1': 5}
+2026-04-06 20:38:54,170 - INFO - SELECT cliente.id AS cliente_id, cliente.nombre_empresa AS cliente_nombre_empresa, cliente.pais AS cliente_pais, cliente.medio_de_pago AS cliente_medio_de_pago, cliente.guion_identificacion AS cliente_guion_identificacion, cliente.guion_saludo AS cliente_guion_saludo, cliente.guion_entrega_mensaje AS cliente_guion_entrega_mensaje, cliente.guion_negociacion AS cliente_guion_negociacion, cliente.guion_agenda_compromiso AS cliente_guion_agenda_compromiso, cliente.guion_cierre AS cliente_guion_cierre, cliente.reglas_adicionales AS cliente_reglas_adicionales 
+FROM cliente 
+WHERE cliente.id = %(pk_1)s
+2026-04-06 20:38:54,173 - INFO - [cached since 64.49s ago] {'pk_1': 1}
+2026-04-06 20:39:04,604 - INFO - INSERT INTO evaluacion (llamada_id, saludo_inicial, confirmacion_identidad, entrega_mensaje, negociacion, agenda_compromiso, cierre, resumen_auditoria, puntaje_logrado, estado_auditoria) VALUES (%(llamada_id)s, %(saludo_inicial)s, %(confirmacion_identidad)s, %(entrega_mensaje)s, %(negociacion)s, %(agenda_compromiso)s, %(cierre)s, %(resumen_auditoria)s, %(puntaje_logrado)s, %(estado_auditoria)s) RETURNING evaluacion.id
+2026-04-06 20:39:04,605 - INFO - [cached since 68.14s ago] {'llamada_id': 5, 'saludo_inicial': True, 'confirmacion_identidad': True, 'entrega_mensaje': True, 'negociacion': True, 'agenda_compromiso': True, 'cierre': True, 'resumen_auditoria': 'El agente ejecutó todos los pasos del proceso, confirmando la identidad, entregando el mensaje de la deuda, negociando una fecha de pago específica que el cliente aceptó, agendando la promesa y realizando un cierre adecuado. El cliente se comprometió a pagar el viernes.', 'puntaje_logrado': 6, 'estado_auditoria': 'Compromiso'}
+2026-04-06 20:39:04,609 - INFO - COMMIT
+2026-04-06 20:39:04,612 - INFO - BEGIN (implicit)
+2026-04-06 20:39:04,614 - INFO - SELECT llamada.id AS llamada_id, llamada.cliente_id AS llamada_cliente_id, llamada.call_id_origen AS llamada_call_id_origen, llamada.grabacion_url AS llamada_grabacion_url, llamada.transcripcion AS llamada_transcripcion, llamada.metadatos_json AS llamada_metadatos_json 
+FROM llamada 
+WHERE llamada.id = %(pk_1)s
+2026-04-06 20:39:04,615 - INFO - [cached since 68.14s ago] {'pk_1': 5}
+2026-04-06 20:39:04,619 - INFO - SELECT cliente.id AS cliente_id, cliente.nombre_empresa AS cliente_nombre_empresa, cliente.pais AS cliente_pais, cliente.medio_de_pago AS cliente_medio_de_pago, cliente.guion_identificacion AS cliente_guion_identificacion, cliente.guion_saludo AS cliente_guion_saludo, cliente.guion_entrega_mensaje AS cliente_guion_entrega_mensaje, cliente.guion_negociacion AS cliente_guion_negociacion, cliente.guion_agenda_compromiso AS cliente_guion_agenda_compromiso, cliente.guion_cierre AS cliente_guion_cierre, cliente.reglas_adicionales AS cliente_reglas_adicionales 
+FROM cliente 
+WHERE cliente.id = %(pk_1)s
+2026-04-06 20:39:04,621 - INFO - [cached since 74.93s ago] {'pk_1': 1}
+2026-04-06 20:39:04,627 - INFO - ROLLBACK
+2026-04-06 20:42:46,802 - INFO - BEGIN (implicit)
+2026-04-06 20:42:46,804 - INFO - SELECT cliente.id, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM cliente 
+WHERE cliente.nombre_empresa = %(nombre_empresa_1)s
+2026-04-06 20:42:46,810 - INFO - [cached since 297.3s ago] {'nombre_empresa_1': 'Access Finance'}
+2026-04-06 20:42:46,816 - INFO - INSERT INTO llamada (cliente_id, call_id_origen, grabacion_url, transcripcion, metadatos_json) VALUES (%(cliente_id)s, %(call_id_origen)s, %(grabacion_url)s, %(transcripcion)s, %(metadatos_json)s::JSON) RETURNING llamada.id
+2026-04-06 20:42:46,818 - INFO - [cached since 297.2s ago] {'cliente_id': 1, 'call_id_origen': 'CALL-ACCESS-1001', 'grabacion_url': 'https://s3.tu-servidor.com/audios/CALL-ACCESS-1001.mp3', 'transcripcion': 'Agente: Muy buenos días, ¿hablo con el señor Carlos Martínez? Cliente: Sí, con él. Agente: Señor Carlos, le llamo de Access Finance por un saldo pend ... (143 characters truncated) ... n y deposito. Agente: Perfecto, dejaré agendada su promesa de pago para el viernes. Recuerde que esto evita cargos extra. Que tenga un excelente día.', 'metadatos_json': '{"id_colly": "CALL-ACCESS-1001", "cuenta_cliente": "77889944", "estatus_colly": "Promesa de Pago", "proveedor": "Colly", "fecha_llamada": "2026-04-07T09:15:22+00:00", "fecha_vencimiento": "2026-03-15", "dias_mora": 23, "balances": {"due": 45000.0, "invoiced": 45000.0, "total": 120000.0}}'}
+2026-04-06 20:42:46,831 - INFO - COMMIT
+2026-04-06 20:42:46,837 - INFO - BEGIN (implicit)
+2026-04-06 20:42:46,844 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json 
+FROM llamada 
+WHERE llamada.id = %(pk_1)s
+2026-04-06 20:42:46,846 - INFO - [cached since 297.2s ago] {'pk_1': 6}
+2026-04-06 20:42:46,854 - INFO - SELECT cliente.id AS cliente_id, cliente.nombre_empresa AS cliente_nombre_empresa, cliente.pais AS cliente_pais, cliente.medio_de_pago AS cliente_medio_de_pago, cliente.guion_identificacion AS cliente_guion_identificacion, cliente.guion_saludo AS cliente_guion_saludo, cliente.guion_entrega_mensaje AS cliente_guion_entrega_mensaje, cliente.guion_negociacion AS cliente_guion_negociacion, cliente.guion_agenda_compromiso AS cliente_guion_agenda_compromiso, cliente.guion_cierre AS cliente_guion_cierre, cliente.reglas_adicionales AS cliente_reglas_adicionales 
+FROM cliente 
+WHERE cliente.id = %(pk_1)s
+2026-04-06 20:42:46,856 - INFO - [cached since 297.2s ago] {'pk_1': 1}
+2026-04-06 20:42:54,579 - INFO - INSERT INTO evaluacion (llamada_id, saludo_inicial, confirmacion_identidad, entrega_mensaje, negociacion, agenda_compromiso, cierre, resumen_auditoria, puntaje_logrado, estado_auditoria) VALUES (%(llamada_id)s, %(saludo_inicial)s, %(confirmacion_identidad)s, %(entrega_mensaje)s, %(negociacion)s, %(agenda_compromiso)s, %(cierre)s, %(resumen_auditoria)s, %(puntaje_logrado)s, %(estado_auditoria)s) RETURNING evaluacion.id
+2026-04-06 20:42:54,581 - INFO - [cached since 298.1s ago] {'llamada_id': 6, 'saludo_inicial': True, 'confirmacion_identidad': True, 'entrega_mensaje': True, 'negociacion': True, 'agenda_compromiso': True, 'cierre': True, 'resumen_auditoria': 'El agente realiza una gestión completa de la llamada, confirmando la identidad, entregando el mensaje de deuda, negociando un compromiso de pago y agendándolo para el viernes. El cliente confirma explícitamente la fecha de pago.', 'puntaje_logrado': 6, 'estado_auditoria': 'Compromiso'}
+2026-04-06 20:42:54,587 - INFO - COMMIT
+2026-04-06 20:42:54,592 - INFO - BEGIN (implicit)
+2026-04-06 20:42:54,596 - INFO - SELECT llamada.id AS llamada_id, llamada.cliente_id AS llamada_cliente_id, llamada.call_id_origen AS llamada_call_id_origen, llamada.grabacion_url AS llamada_grabacion_url, llamada.transcripcion AS llamada_transcripcion, llamada.metadatos_json AS llamada_metadatos_json 
+FROM llamada 
+WHERE llamada.id = %(pk_1)s
+2026-04-06 20:42:54,597 - INFO - [cached since 298.1s ago] {'pk_1': 6}
+2026-04-06 20:42:54,600 - INFO - SELECT cliente.id AS cliente_id, cliente.nombre_empresa AS cliente_nombre_empresa, cliente.pais AS cliente_pais, cliente.medio_de_pago AS cliente_medio_de_pago, cliente.guion_identificacion AS cliente_guion_identificacion, cliente.guion_saludo AS cliente_guion_saludo, cliente.guion_entrega_mensaje AS cliente_guion_entrega_mensaje, cliente.guion_negociacion AS cliente_guion_negociacion, cliente.guion_agenda_compromiso AS cliente_guion_agenda_compromiso, cliente.guion_cierre AS cliente_guion_cierre, cliente.reglas_adicionales AS cliente_reglas_adicionales 
+FROM cliente 
+WHERE cliente.id = %(pk_1)s
+2026-04-06 20:42:54,603 - INFO - [cached since 304.9s ago] {'pk_1': 1}
+2026-04-06 20:42:54,611 - INFO - ROLLBACK
+2026-04-06 20:44:36,225 - INFO - BEGIN (implicit)
+2026-04-06 20:44:36,263 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.saludo_inicial, evaluacion.confirmacion_identidad, evaluacion.entrega_mensaje, evaluacion.negociacion, evaluacion.agenda_compromiso, evaluacion.cierre, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-04-06 20:44:36,266 - INFO - [generated in 0.00580s] {'id_3': 7}
+2026-04-06 20:44:36,288 - INFO - ROLLBACK
+2026-04-06 20:44:46,185 - INFO - BEGIN (implicit)
+2026-04-06 20:44:46,189 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.saludo_inicial, evaluacion.confirmacion_identidad, evaluacion.entrega_mensaje, evaluacion.negociacion, evaluacion.agenda_compromiso, evaluacion.cierre, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-04-06 20:44:46,197 - INFO - [cached since 9.937s ago] {'id_3': 6}
+2026-04-06 20:44:46,220 - INFO - ROLLBACK
+2026-04-06 20:45:10,518 - INFO - BEGIN (implicit)
+2026-04-06 20:45:10,591 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.saludo_inicial, evaluacion.confirmacion_identidad, evaluacion.entrega_mensaje, evaluacion.negociacion, evaluacion.agenda_compromiso, evaluacion.cierre, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria 
+FROM llamada LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-06 20:45:10,610 - INFO - [generated in 0.01798s] {}
+2026-04-06 20:45:10,737 - INFO - ROLLBACK
+2026-04-06 20:45:34,723 - INFO - BEGIN (implicit)
+2026-04-06 20:45:34,756 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion
+2026-04-06 20:45:34,760 - INFO - [generated in 0.00433s] {}
+2026-04-06 20:45:34,780 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion
+2026-04-06 20:45:34,784 - INFO - [generated in 0.00368s] {}
+2026-04-06 20:45:34,827 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion GROUP BY evaluacion.estado_auditoria
+2026-04-06 20:45:34,831 - INFO - [generated in 0.00374s] {}
+2026-04-06 20:45:34,858 - INFO - ROLLBACK
+2026-04-06 20:50:42,414 - INFO - BEGIN (implicit)
+2026-04-06 20:50:42,416 - INFO - SELECT cliente.id, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM cliente 
+WHERE cliente.nombre_empresa = %(nombre_empresa_1)s
+2026-04-06 20:50:42,417 - INFO - [cached since 772.9s ago] {'nombre_empresa_1': 'Access Finance'}
+2026-04-06 20:50:42,422 - INFO - INSERT INTO llamada (cliente_id, call_id_origen, grabacion_url, transcripcion, metadatos_json) VALUES (%(cliente_id)s, %(call_id_origen)s, %(grabacion_url)s, %(transcripcion)s, %(metadatos_json)s::JSON) RETURNING llamada.id
+2026-04-06 20:50:42,424 - INFO - [cached since 772.7s ago] {'cliente_id': 1, 'call_id_origen': 'CALL-ACCESS-1001', 'grabacion_url': 'https://s3.tu-servidor.com/audios/CALL-ACCESS-1001.mp3', 'transcripcion': 'Agente: Muy buenos días, ¿hablo con el señor Carlos Martínez? Cliente: Sí, con él. Agente: Señor Carlos, le llamo de Access Finance por un saldo pend ... (143 characters truncated) ... n y deposito. Agente: Perfecto, dejaré agendada su promesa de pago para el viernes. Recuerde que esto evita cargos extra. Que tenga un excelente día.', 'metadatos_json': '{"id_colly": "CALL-ACCESS-1001", "cuenta_cliente": "77889944", "estatus_colly": "Promesa de Pago", "proveedor": "Colly", "fecha_llamada": "2026-04-07T09:15:22+00:00", "fecha_vencimiento": "2026-03-15", "dias_mora": 23, "balances": {"due": 45000.0, "invoiced": 45000.0, "total": 120000.0}}'}
+2026-04-06 20:50:42,437 - INFO - COMMIT
+2026-04-06 20:50:42,443 - INFO - BEGIN (implicit)
+2026-04-06 20:50:42,446 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json 
+FROM llamada 
+WHERE llamada.id = %(pk_1)s
+2026-04-06 20:50:42,449 - INFO - [cached since 772.7s ago] {'pk_1': 7}
+2026-04-06 20:50:42,456 - INFO - SELECT cliente.id AS cliente_id, cliente.nombre_empresa AS cliente_nombre_empresa, cliente.pais AS cliente_pais, cliente.medio_de_pago AS cliente_medio_de_pago, cliente.guion_identificacion AS cliente_guion_identificacion, cliente.guion_saludo AS cliente_guion_saludo, cliente.guion_entrega_mensaje AS cliente_guion_entrega_mensaje, cliente.guion_negociacion AS cliente_guion_negociacion, cliente.guion_agenda_compromiso AS cliente_guion_agenda_compromiso, cliente.guion_cierre AS cliente_guion_cierre, cliente.reglas_adicionales AS cliente_reglas_adicionales 
+FROM cliente 
+WHERE cliente.id = %(pk_1)s
+2026-04-06 20:50:42,459 - INFO - [cached since 772.7s ago] {'pk_1': 1}
+2026-04-06 20:51:01,295 - INFO - INSERT INTO evaluacion (llamada_id, saludo_inicial, confirmacion_identidad, entrega_mensaje, negociacion, agenda_compromiso, cierre, resumen_auditoria, puntaje_logrado, estado_auditoria) VALUES (%(llamada_id)s, %(saludo_inicial)s, %(confirmacion_identidad)s, %(entrega_mensaje)s, %(negociacion)s, %(agenda_compromiso)s, %(cierre)s, %(resumen_auditoria)s, %(puntaje_logrado)s, %(estado_auditoria)s) RETURNING evaluacion.id
+2026-04-06 20:51:01,297 - INFO - [cached since 784.8s ago] {'llamada_id': 7, 'saludo_inicial': False, 'confirmacion_identidad': False, 'entrega_mensaje': False, 'negociacion': False, 'agenda_compromiso': False, 'cierre': False, 'resumen_auditoria': "La transcripción muestra que el agente saludó y confirmó la identidad del cliente. Se entregó el mensaje de cobro por un saldo pendiente de 45,000 pe ... (362 characters truncated) ... valuación de calidad de la adherencia al guion resulta en 0 para todos los ítems, ya que no hay texto del guion contra el cual comparar la intención.", 'puntaje_logrado': 0, 'estado_auditoria': 'Compromiso'}
+2026-04-06 20:51:01,303 - INFO - COMMIT
+2026-04-06 20:51:01,307 - INFO - BEGIN (implicit)
+2026-04-06 20:51:01,309 - INFO - SELECT llamada.id AS llamada_id, llamada.cliente_id AS llamada_cliente_id, llamada.call_id_origen AS llamada_call_id_origen, llamada.grabacion_url AS llamada_grabacion_url, llamada.transcripcion AS llamada_transcripcion, llamada.metadatos_json AS llamada_metadatos_json 
+FROM llamada 
+WHERE llamada.id = %(pk_1)s
+2026-04-06 20:51:01,311 - INFO - [cached since 784.8s ago] {'pk_1': 7}
+2026-04-06 20:51:01,317 - INFO - SELECT cliente.id AS cliente_id, cliente.nombre_empresa AS cliente_nombre_empresa, cliente.pais AS cliente_pais, cliente.medio_de_pago AS cliente_medio_de_pago, cliente.guion_identificacion AS cliente_guion_identificacion, cliente.guion_saludo AS cliente_guion_saludo, cliente.guion_entrega_mensaje AS cliente_guion_entrega_mensaje, cliente.guion_negociacion AS cliente_guion_negociacion, cliente.guion_agenda_compromiso AS cliente_guion_agenda_compromiso, cliente.guion_cierre AS cliente_guion_cierre, cliente.reglas_adicionales AS cliente_reglas_adicionales 
+FROM cliente 
+WHERE cliente.id = %(pk_1)s
+2026-04-06 20:51:01,319 - INFO - [cached since 791.6s ago] {'pk_1': 1}
+2026-04-06 20:51:01,327 - INFO - ROLLBACK
+2026-04-06 20:52:12,876 - INFO - BEGIN (implicit)
+2026-04-06 20:52:12,887 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.saludo_inicial, evaluacion.confirmacion_identidad, evaluacion.entrega_mensaje, evaluacion.negociacion, evaluacion.agenda_compromiso, evaluacion.cierre, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-04-06 20:52:12,889 - INFO - [cached since 456.6s ago] {'id_3': 8}
+2026-04-06 20:52:12,896 - INFO - ROLLBACK
+2026-04-06 20:52:22,710 - INFO - BEGIN (implicit)
+2026-04-06 20:52:22,713 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.saludo_inicial, evaluacion.confirmacion_identidad, evaluacion.entrega_mensaje, evaluacion.negociacion, evaluacion.agenda_compromiso, evaluacion.cierre, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-04-06 20:52:22,715 - INFO - [cached since 466.4s ago] {'id_3': 7}
+2026-04-06 20:52:22,751 - INFO - ROLLBACK
