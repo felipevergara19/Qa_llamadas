@@ -272,10 +272,10 @@ def listar_llamadas(db: Session = Depends(get_session)):
     ordenadas de la más reciente a la más antigua.
     Ideal para la tabla del Dashboard (Frontend).
     """
-    # 1. Hacemos la consulta uniendo la Llamada con su Evaluación (si la tiene)
-    # y ordenamos por el ID de forma descendente (los más nuevos primero)
+    # 1. Hacemos la consulta uniendo Llamada, Evaluacion (outer) y Cliente
     statement = (
-        select(Llamada, Evaluacion)
+        select(Llamada, Evaluacion, Cliente)
+        .join(Cliente, Llamada.cliente_id == Cliente.id)
         .join(Evaluacion, Llamada.id == Evaluacion.llamada_id, isouter=True) 
         .order_by(Llamada.id.desc())
     )
@@ -285,18 +285,20 @@ def listar_llamadas(db: Session = Depends(get_session)):
     # 2. Formateamos la respuesta para que el Frontend la lea fácil
     lista_historial = []
     
-    for llamada, evaluacion in resultados_bd:
-        # Extraemos la empresa y fecha desde los metadatos JSON de forma segura
+    for llamada, evaluacion, cliente in resultados_bd:
         metadatos = llamada.metadatos_json or {}
         
         item = {
             "id_llamada": llamada.id,
-            "empresa": metadatos.get("Empresa", "Desconocida"),
-            "fecha_llamada": metadatos.get("Fecha", "Sin fecha"),
-            "estatus_original": metadatos.get("Estatus", "Desconocido"),
+            "empresa": cliente.nombre_empresa,
+            "fecha_llamada": metadatos.get("fecha_llamada", "Sin fecha"),
+            "fecha_vencimiento": metadatos.get("fecha_vencimiento", "-"),
+            "dias_mora": metadatos.get("dias_mora", 0),
+            "estatus_original": metadatos.get("estatus_colly", "Desconocido"),
             "resultados_ia": {
                 "estatus_ia": evaluacion.estado_auditoria if evaluacion else "Pendiente",
-                "puntaje": evaluacion.puntaje_logrado if evaluacion else 0
+                "puntaje": evaluacion.puntaje_logrado if evaluacion else 0,
+                "error_critico": evaluacion.error_critico if evaluacion else False
             }
         }
         lista_historial.append(item)

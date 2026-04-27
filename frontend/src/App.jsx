@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { LayoutDashboard, Settings } from 'lucide-react';
 
+import Dashboard from './views/Dashboard';
+
 // Placeholder components
-const Dashboard = () => <div className="p-6"><h1 className="text-2xl font-bold">Panel de Auditorías</h1></div>;
 const ConfigPanel = () => <div className="p-6"><h1 className="text-2xl font-bold">Configuración</h1></div>;
 
 function App() {
