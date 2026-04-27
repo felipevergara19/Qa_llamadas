@@ -17,3 +17,8 @@ __pycache__/
 # 5. Archivos del Sistema Operativo
 .DS_Store
 Thumbs.db
+
+# 6. Frontend y Logs
+node_modules/
+api_seguridad.log
+*.log
