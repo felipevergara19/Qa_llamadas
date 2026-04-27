@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import { Search, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 
@@ -141,9 +142,9 @@ export default function Dashboard() {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-blue-600 hover:text-blue-900 font-medium">
+                      <Link to={`/llamada/${llamada.id_llamada}`} className="text-blue-600 hover:text-blue-900 font-medium">
                         Ver Detalle
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))

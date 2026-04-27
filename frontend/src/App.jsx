@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { LayoutDashboard, Settings } from 'lucide-react';
 
 import Dashboard from './views/Dashboard';
+import CallDetail from './views/CallDetail';
 
 // Placeholder components
 const ConfigPanel = () => <div className="p-6"><h1 className="text-2xl font-bold">Configuración</h1></div>;
@@ -31,6 +32,7 @@ function App() {
         <main className="flex-1 overflow-y-auto">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/llamada/:id" element={<CallDetail />} />
             <Route path="/settings" element={<ConfigPanel />} />
           </Routes>
         </main>
