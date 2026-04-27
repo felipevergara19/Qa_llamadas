@@ -8,19 +8,40 @@ load_dotenv()
 # 1. Configuramos la IA
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-def ejecutar_auditoria_ia(transcripcion, llamada, cliente, prompt_base=None):
+from sqlmodel import Session, select
+import time
+from models import Rubrica, Criterio
+
+def ejecutar_auditoria_ia(transcripcion, llamada, cliente, db: Session, prompt_base=None):
     model = genai.GenerativeModel('gemini-2.5-flash')
 
-    # 1. ARMAMOS EL GUION DINÁMICO CON LOS DATOS DE LA BASE DE DATOS
-    guion_dinamico = f"""
-    - Identidad: {cliente.guion_identificacion}
-    - Saludo: {cliente.guion_saludo}
-    - Entrega de mensaje: {cliente.guion_entrega_mensaje}
-    - Negociación: {cliente.guion_negociacion}
-    - Agenda de Compromiso: {cliente.guion_agenda_compromiso}
-    - Cierre: {cliente.guion_cierre}
-    - Reglas Extra: {cliente.reglas_adicionales}
-    """
+    # 1. Buscar la Rúbrica adecuada basada en la empresa y los días de mora
+    dias_mora = llamada.metadatos_json.get("dias_mora", 0)
+    if dias_mora is None:
+        dias_mora = 0
+        
+    statement = select(Rubrica).where(
+        Rubrica.empresa == cliente.nombre_empresa,
+        Rubrica.activo == True,
+        Rubrica.mora_min <= dias_mora,
+        Rubrica.mora_max >= dias_mora
+    )
+    rubrica_activa = db.exec(statement).first()
+
+    # Fallback por si no hay rúbrica activa para ese rango
+    if not rubrica_activa:
+        # Intentar buscar cualquier rúbrica activa de la empresa sin importar el rango
+        rubrica_activa = db.exec(select(Rubrica).where(Rubrica.empresa == cliente.nombre_empresa, Rubrica.activo == True)).first()
+
+    guion_dinamico = ""
+    criterios = []
+    
+    if rubrica_activa:
+        criterios = db.exec(select(Criterio).where(Criterio.rubrica_id == rubrica_activa.id)).all()
+        for c in criterios:
+            guion_dinamico += f"- {c.nombre} (Severidad: {'Sí' if c.es_severidad else 'No'}): {c.descripcion}\n"
+    else:
+        guion_dinamico = "No se encontró un guion específico para este cliente y rango de mora."
     
     # 2. Tu Prompt Maestro (lo guardamos en una variable)
     prompt_default = f"""
@@ -249,11 +270,20 @@ Ejemplo de salida:
     prompt_final = prompt_final.replace("{guion_dinamico}", guion_dinamico)
     prompt_final = prompt_final.replace("{transcripcion}", transcripcion)
     
-   # 3. Llamamos a Gemini 
-    response = model.generate_content(prompt_final)
-    texto_respuesta = response.text.strip()
+   # 3. Llamamos a Gemini con reintentos (HU15)
+    max_retries = 3
+    texto_respuesta = ""
+    for attempt in range(max_retries):
+        try:
+            response = model.generate_content(prompt_final)
+            texto_respuesta = response.text.strip()
+            break
+        except Exception as e:
+            if attempt == max_retries - 1:
+                raise e
+            time.sleep(2)
     
-    # 4. Limpieza segura (solo quita la basura si está al inicio o al final)
+    # 4. Limpieza segura
     if texto_respuesta.startswith("```json"):
         texto_respuesta = texto_respuesta[7:]
     if texto_respuesta.startswith("```"):
@@ -262,6 +292,22 @@ Ejemplo de salida:
         texto_respuesta = texto_respuesta[:-3]
     
     limpio = texto_respuesta.strip()
+    resultado_json = json.loads(limpio)
     
-    # 5. Convertimos a diccionario de Python
-    return json.loads(limpio)
+    # 5. Cálculo dinámico de puntaje y error crítico
+    puntaje = 0
+    error_critico = False
+    
+    for c in criterios:
+        # El JSON devuelto debería tener la llave del nombre del criterio o podemos sanitizarlo
+        # Si la IA usó espacios, tal vez sea un problema, pero asumimos que mapea bien si lo indicamos
+        # Buscamos en el JSON la nota del criterio
+        nota = resultado_json.get(c.nombre, 0)
+        
+        if c.es_severidad and nota == 0:
+            error_critico = True
+        
+        if not c.es_severidad:
+            puntaje += (nota * c.peso)
+            
+    return resultado_json, puntaje, error_critico

@@ -122,35 +122,22 @@ def recibir_llamada(
         prompt_base_str = config_prompt.valor if config_prompt else None
 
         # 1. Llamamos a Gemini
-        resultado_ia = ejecutar_auditoria_ia(
+        resultado_ia, puntos, error_critico = ejecutar_auditoria_ia(
             transcripcion=nueva_llamada.transcripcion,
             llamada=nueva_llamada,
             cliente=cliente_bd,
+            db=db,
             prompt_base=prompt_base_str
-        )
-        
-        # 2. Sumamos los puntos obtenidos
-        puntos = (
-            resultado_ia.get("Saludo", 0) +
-            resultado_ia.get("Confirmacion_identidad", 0) +
-            resultado_ia.get("Entrega_mensaje", 0) +
-            resultado_ia.get("Negociacion", 0) +
-            resultado_ia.get("Agenda_compromiso", 0) +
-            resultado_ia.get("Cierre", 0)
         )
 
         # 3. Guardamos el resultado de la IA
         nueva_evaluacion = Evaluacion(
             llamada_id=nueva_llamada.id,
-            saludo_inicial=(resultado_ia.get("Saludo") == 1),
-            confirmacion_identidad=(resultado_ia.get("Confirmacion_identidad") == 1),
-            entrega_mensaje=(resultado_ia.get("Entrega_mensaje") == 1),
-            negociacion=(resultado_ia.get("Negociacion") == 1),
-            agenda_compromiso=(resultado_ia.get("Agenda_compromiso") == 1),
-            cierre=(resultado_ia.get("Cierre") == 1),
+            detalles_json=resultado_ia,
             resumen_auditoria=resultado_ia.get("Resumen", "Sin resumen"),
             estado_auditoria=resultado_ia.get("Estatus_detectado", "Desconocido"),
-            puntaje_logrado=puntos
+            puntaje_logrado=puntos,
+            error_critico=error_critico
         )
         
         db.add(nueva_evaluacion)
@@ -210,18 +197,11 @@ def obtener_detalle_evaluacion(
         },
         "resultados_ia": {
             "estatus_detectado": evaluacion.estado_auditoria,
-            # Quitamos estatus_coherente porque no está en la BD
             "puntaje_total": evaluacion.puntaje_logrado,
+            "error_critico": evaluacion.error_critico,
             "resumen_analisis": evaluacion.resumen_auditoria
         },
-        "rubrica_detallada": {
-            "saludo": evaluacion.saludo_inicial, # Corregido a saludo_inicial
-            "confirmacion_identidad": evaluacion.confirmacion_identidad,
-            "entrega_mensaje": evaluacion.entrega_mensaje,
-            "negociacion": evaluacion.negociacion,
-            "agenda_compromiso": evaluacion.agenda_compromiso,
-            "cierre": evaluacion.cierre
-        },
+        "rubrica_detallada": evaluacion.detalles_json,
         "transcripcion_completa": llamada.transcripcion
     }
 
