@@ -75,3 +75,7 @@ class Rubrica(SQLModel, table=True):
     empresa: str # Para vincular con la llamada
     activo: bool = Field(default=True)
     criterios: List[Criterio] = Relationship(back_populates="rubrica")
+
+class ConfiguracionSistema(SQLModel, table=True):
+    clave: str = Field(primary_key=True)
+    valor: str

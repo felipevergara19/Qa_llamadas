@@ -4,8 +4,9 @@ from fastapi.exceptions import RequestValidationError
 import logging
 from sqlmodel import Session, select, func
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
 from services import ejecutar_auditoria_ia
-from models import Cliente, Llamada, Evaluacion, Criterio, Rubrica
+from models import Cliente, Llamada, Evaluacion, Criterio, Rubrica, ConfiguracionSistema
 # Importamos nuestros propios archivos
 from database import engine, get_session, create_db_and_tables
 from schemas import IngestaLlamadaColly
@@ -44,6 +45,15 @@ app = FastAPI(
     title="API de QA Inteligente - Colektia",
     version="1.0.0",
     lifespan=lifespan
+)
+
+# Configuración CORS para permitir peticiones del frontend (Vite por defecto usa 5173)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- 2. EL ENDPOINT DE INGESTA (Historia de Usuario 05) ---
@@ -106,11 +116,17 @@ def recibir_llamada(
     try:
         print(f"Iniciando auditoría IA para el cliente: {cliente_bd.nombre_empresa}")
         
+        # 0. Obtener el prompt base desde la BD
+        statement_prompt = select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
+        config_prompt = db.exec(statement_prompt).first()
+        prompt_base_str = config_prompt.valor if config_prompt else None
+
         # 1. Llamamos a Gemini
         resultado_ia = ejecutar_auditoria_ia(
             transcripcion=nueva_llamada.transcripcion,
             llamada=nueva_llamada,
-            cliente=cliente_bd
+            cliente=cliente_bd,
+            prompt_base=prompt_base_str
         )
         
         # 2. Sumamos los puntos obtenidos
@@ -331,3 +347,61 @@ def crear_rubrica(nombre: str, empresa: str, puntos: List[CriterioCreate], db: S
     
     db.commit()
     return {"mensaje": "Rúbrica creada con éxito", "id": nueva_rubrica.id}
+
+@app.get("/api/v1/rubricas", summary="HU29: Listar todas las rúbricas")
+def listar_rubricas(db: Session = Depends(get_session)):
+    statement = select(Rubrica)
+    resultados = db.exec(statement).all()
+    lista = []
+    for r in resultados:
+        criterios = db.exec(select(Criterio).where(Criterio.rubrica_id == r.id)).all()
+        lista.append({
+            "id": r.id,
+            "nombre": r.nombre,
+            "empresa": r.empresa,
+            "activo": r.activo,
+            "criterios": [{"nombre": c.nombre, "descripcion": c.descripcion, "peso": c.peso} for c in criterios]
+        })
+    return lista
+
+class PromptUpdate(BaseModel):
+    texto: str
+
+@app.get("/api/v1/config/prompt", summary="HU26: Obtener el prompt actual de la IA")
+def obtener_prompt(db: Session = Depends(get_session)):
+    statement = select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
+    config = db.exec(statement).first()
+    if config:
+        return {"prompt": config.valor}
+    
+    prompt_default = """Eres un auditor automático de calidad de llamadas de cobranza de COLEKTIA.
+    
+DATOS DE LA LLAMADA:
+- ID: {llamada_id}
+- Cliente: {cliente_nombre}
+- Estatus original: {estatus_original}
+
+GUION ESPECÍFICO PARA ESTE CLIENTE:
+{guion_dinamico}
+
+TRANSCRIPCIÓN:
+"{transcripcion}"
+
+Recibirás un registro de llamada con esta información...
+(Puedes agregar aquí el resto de las instrucciones de QA)
+"""
+    return {"prompt": prompt_default}
+
+@app.post("/api/v1/config/prompt", summary="HU26: Actualizar el prompt base de la IA")
+def actualizar_prompt(datos: PromptUpdate, db: Session = Depends(get_session)):
+    statement = select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
+    config = db.exec(statement).first()
+    if config:
+        config.valor = datos.texto
+        db.add(config)
+    else:
+        nueva_config = ConfiguracionSistema(clave="PROMPT_BASE", valor=datos.texto)
+        db.add(nueva_config)
+    
+    db.commit()
+    return {"mensaje": "Prompt actualizado con éxito"}

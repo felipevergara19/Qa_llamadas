@@ -8,7 +8,7 @@ load_dotenv()
 # 1. Configuramos la IA
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-def ejecutar_auditoria_ia(transcripcion, llamada, cliente):
+def ejecutar_auditoria_ia(transcripcion, llamada, cliente, prompt_base=None):
     model = genai.GenerativeModel('gemini-2.5-flash')
 
     # 1. ARMAMOS EL GUION DINÁMICO CON LOS DATOS DE LA BASE DE DATOS
@@ -23,7 +23,7 @@ def ejecutar_auditoria_ia(transcripcion, llamada, cliente):
     """
     
     # 2. Tu Prompt Maestro (lo guardamos en una variable)
-    prompt = f"""
+    prompt_default = f"""
     Eres un auditor automático de calidad de llamadas de cobranza de COLEKTIA.
     
     DATOS DE LA LLAMADA:
@@ -237,10 +237,20 @@ Ejemplo de salida:
       "Resumen": "Observación general..."
 }}
 
+    }}
     """
     
+    prompt_final = prompt_base if prompt_base else prompt_default
+    
+    # Reemplazamos las variables clave de forma segura
+    prompt_final = prompt_final.replace("{llamada_id}", str(llamada.id))
+    prompt_final = prompt_final.replace("{cliente_nombre}", str(cliente.nombre_empresa))
+    prompt_final = prompt_final.replace("{estatus_original}", str(llamada.metadatos_json.get('estatus_colly', 'Desconocido')))
+    prompt_final = prompt_final.replace("{guion_dinamico}", guion_dinamico)
+    prompt_final = prompt_final.replace("{transcripcion}", transcripcion)
+    
    # 3. Llamamos a Gemini 
-    response = model.generate_content(prompt)
+    response = model.generate_content(prompt_final)
     texto_respuesta = response.text.strip()
     
     # 4. Limpieza segura (solo quita la basura si está al inicio o al final)
