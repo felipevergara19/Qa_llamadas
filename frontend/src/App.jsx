@@ -3,9 +3,7 @@ import { LayoutDashboard, Settings } from 'lucide-react';
 
 import Dashboard from './views/Dashboard';
 import CallDetail from './views/CallDetail';
-
-// Placeholder components
-const ConfigPanel = () => <div className="p-6"><h1 className="text-2xl font-bold">Configuración</h1></div>;
+import SettingsView from './views/Settings';
 
 function App() {
   return (
@@ -33,7 +31,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/llamada/:id" element={<CallDetail />} />
-            <Route path="/settings" element={<ConfigPanel />} />
+            <Route path="/settings" element={<SettingsView />} />
           </Routes>
         </main>
       </div>

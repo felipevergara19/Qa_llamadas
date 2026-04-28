@@ -29,6 +29,12 @@ class CriterioCreate(BaseModel):
     nombre: str
     descripcion: str
     peso: int = 1
+    es_severidad: bool = False
+
+class RubricaCreate(BaseModel):
+    nombre: str
+    empresa: str
+    puntos: List[CriterioCreate]
 
 # --- 1. CICLO DE VIDA DEL SERVIDOR ---
 # Esto se ejecuta una sola vez al encender la API. 
@@ -310,19 +316,20 @@ def listar_llamadas(db: Session = Depends(get_session)):
     }
 
 @app.post("/api/v1/rubricas", summary="HU09: Crear una nueva rúbrica con criterios")
-def crear_rubrica(nombre: str, empresa: str, puntos: List[CriterioCreate], db: Session = Depends(get_session)):
+def crear_rubrica(datos: RubricaCreate, db: Session = Depends(get_session)):
     # 1. Crear la cabecera de la rúbrica
-    nueva_rubrica = Rubrica(nombre=nombre, empresa=empresa)
+    nueva_rubrica = Rubrica(nombre=datos.nombre, empresa=datos.empresa)
     db.add(nueva_rubrica)
     db.commit()
     db.refresh(nueva_rubrica)
     
     # 2. Crear los criterios asociados
-    for p in puntos:
+    for p in datos.puntos:
         nuevo_criterio = Criterio(
             nombre=p.nombre,
             descripcion=p.descripcion,
             peso=p.peso,
+            es_severidad=p.es_severidad,
             rubrica_id=nueva_rubrica.id
         )
         db.add(nuevo_criterio)
@@ -342,7 +349,7 @@ def listar_rubricas(db: Session = Depends(get_session)):
             "nombre": r.nombre,
             "empresa": r.empresa,
             "activo": r.activo,
-            "criterios": [{"nombre": c.nombre, "descripcion": c.descripcion, "peso": c.peso} for c in criterios]
+            "criterios": [{"nombre": c.nombre, "descripcion": c.descripcion, "peso": c.peso, "es_severidad": c.es_severidad} for c in criterios]
         })
     return lista
 

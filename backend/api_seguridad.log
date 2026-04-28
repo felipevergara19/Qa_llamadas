@@ -549,3 +549,125 @@ FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente 
 WHERE llamada.id = %(id_3)s
 2026-04-06 20:52:22,715 - INFO - [cached since 466.4s ago] {'id_3': 7}
 2026-04-06 20:52:22,751 - INFO - ROLLBACK
+2026-04-27 01:02:04,441 - INFO - select pg_catalog.version()
+2026-04-27 01:02:04,441 - INFO - [raw sql] {}
+2026-04-27 01:02:04,443 - INFO - select current_schema()
+2026-04-27 01:02:04,443 - INFO - [raw sql] {}
+2026-04-27 01:02:04,444 - INFO - show standard_conforming_strings
+2026-04-27 01:02:04,444 - INFO - [raw sql] {}
+2026-04-27 01:02:04,445 - INFO - BEGIN (implicit)
+2026-04-27 01:02:04,447 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-27 01:02:04,447 - INFO - [generated in 0.00023s] {'table_name': 'cliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-27 01:02:04,451 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-27 01:02:04,451 - INFO - [cached since 0.004141s ago] {'table_name': 'llamada', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-27 01:02:04,451 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-27 01:02:04,451 - INFO - [cached since 0.004843s ago] {'table_name': 'evaluacion', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-27 01:02:04,453 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-27 01:02:04,453 - INFO - [cached since 0.005784s ago] {'table_name': 'guioncliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-27 01:02:04,453 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-27 01:02:04,453 - INFO - [cached since 0.006623s ago] {'table_name': 'criterio', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-27 01:02:04,454 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-27 01:02:04,454 - INFO - [cached since 0.007328s ago] {'table_name': 'rubrica', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-27 01:02:04,455 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-04-27 01:02:04,455 - INFO - [cached since 0.007823s ago] {'table_name': 'configuracionsistema', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-04-27 01:02:04,455 - INFO - 
+CREATE TABLE rubrica (
+	id SERIAL NOT NULL, 
+	nombre VARCHAR NOT NULL, 
+	empresa VARCHAR NOT NULL, 
+	mora_min INTEGER, 
+	mora_max INTEGER, 
+	activo BOOLEAN NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+2026-04-27 01:02:04,455 - INFO - [no key 0.00024s] {}
+2026-04-27 01:02:04,501 - INFO - 
+CREATE TABLE configuracionsistema (
+	clave VARCHAR NOT NULL, 
+	valor VARCHAR NOT NULL, 
+	PRIMARY KEY (clave)
+)
+
+
+2026-04-27 01:02:04,501 - INFO - [no key 0.00035s] {}
+2026-04-27 01:02:04,505 - INFO - 
+CREATE TABLE criterio (
+	id SERIAL NOT NULL, 
+	nombre VARCHAR NOT NULL, 
+	descripcion VARCHAR NOT NULL, 
+	peso INTEGER NOT NULL, 
+	es_severidad BOOLEAN NOT NULL, 
+	rubrica_id INTEGER NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(rubrica_id) REFERENCES rubrica (id)
+)
+
+
+2026-04-27 01:02:04,506 - INFO - [no key 0.00024s] {}
+2026-04-27 01:02:04,512 - INFO - COMMIT
+2026-04-27 01:06:19,270 - INFO - BEGIN (implicit)
+2026-04-27 01:06:19,276 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:06:19,276 - INFO - [generated in 0.00032s] {}
+2026-04-27 01:06:19,285 - INFO - ROLLBACK
+2026-04-27 01:06:19,524 - INFO - BEGIN (implicit)
+2026-04-27 01:06:19,525 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:06:19,525 - INFO - [cached since 0.2492s ago] {}
+2026-04-27 01:06:19,525 - INFO - ROLLBACK
+2026-04-27 01:06:22,772 - INFO - BEGIN (implicit)
+2026-04-27 01:06:22,772 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:06:22,772 - INFO - [cached since 3.496s ago] {}
+2026-04-27 01:06:22,773 - INFO - ROLLBACK
+2026-04-27 01:06:22,777 - INFO - BEGIN (implicit)
+2026-04-27 01:06:22,777 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:06:22,777 - INFO - [cached since 3.502s ago] {}
+2026-04-27 01:06:22,778 - INFO - ROLLBACK
+2026-04-27 01:06:28,176 - INFO - BEGIN (implicit)
+2026-04-27 01:06:28,176 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:06:28,178 - INFO - [cached since 8.901s ago] {}
+2026-04-27 01:06:28,178 - INFO - ROLLBACK
+2026-04-27 01:06:28,440 - INFO - BEGIN (implicit)
+2026-04-27 01:06:28,440 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:06:28,441 - INFO - [cached since 9.164s ago] {}
+2026-04-27 01:06:28,441 - INFO - ROLLBACK
+2026-04-27 01:09:05,885 - INFO - BEGIN (implicit)
+2026-04-27 01:09:05,885 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:09:05,885 - INFO - [cached since 166.6s ago] {}
+2026-04-27 01:09:05,886 - INFO - ROLLBACK
+2026-04-27 01:09:06,148 - INFO - BEGIN (implicit)
+2026-04-27 01:09:06,148 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:09:06,148 - INFO - [cached since 166.9s ago] {}
+2026-04-27 01:09:06,148 - INFO - ROLLBACK
+2026-04-27 01:09:08,717 - INFO - BEGIN (implicit)
+2026-04-27 01:09:08,717 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:09:08,718 - INFO - [cached since 169.4s ago] {}
+2026-04-27 01:09:08,720 - INFO - ROLLBACK
+2026-04-27 01:09:09,028 - INFO - BEGIN (implicit)
+2026-04-27 01:09:09,028 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-04-27 01:09:09,029 - INFO - [cached since 169.8s ago] {}
+2026-04-27 01:09:09,029 - INFO - ROLLBACK
