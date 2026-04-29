@@ -1,26 +1,24 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, HTTPException, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import logging
 from sqlmodel import Session, select, func
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from services import ejecutar_auditoria_ia
 from models import Cliente, Llamada, Evaluacion, Criterio, Rubrica, ConfiguracionSistema
-# Importamos nuestros propios archivos
 from database import engine, get_session, create_db_and_tables
 from schemas import IngestaLlamadaColly
 from typing import List
 from pydantic import BaseModel
 
-# --- CONFIGURACIÓN DE LOGS AVANZADA ---
-# Esto creará un archivo llamado "api_seguridad.log" en tu carpeta
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("api_seguridad.log", encoding="utf-8"), # Lo guarda en un archivo físico
-        logging.StreamHandler() # También lo sigue mostrando en tu terminal
+        logging.FileHandler("api_seguridad.log", encoding="utf-8"),
+        logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
@@ -36,24 +34,87 @@ class RubricaCreate(BaseModel):
     empresa: str
     puntos: List[CriterioCreate]
 
-# --- 1. CICLO DE VIDA DEL SERVIDOR ---
-# Esto se ejecuta una sola vez al encender la API. 
+class PromptUpdate(BaseModel):
+    texto: str
+
+# =============================================================================
+# HU16 - PROCESAMIENTO EN LOTE (MICRO-BATCHING)
+# =============================================================================
+BATCH_SIZE = 100
+scheduler = AsyncIOScheduler(timezone="America/Santiago")
+
+def procesar_llamadas_pendientes():
+    logger.info(f"[BATCH] Iniciando ciclo (max {BATCH_SIZE} llamadas)...")
+    with Session(engine) as db:
+        ids_evaluados = select(Evaluacion.llamada_id)
+        statement = (
+            select(Llamada, Cliente)
+            .join(Cliente, Llamada.cliente_id == Cliente.id)
+            .where(~Llamada.id.in_(ids_evaluados))
+            .limit(BATCH_SIZE)
+        )
+        pendientes = db.exec(statement).all()
+        if not pendientes:
+            logger.info("[BATCH] No hay llamadas pendientes.")
+            return
+        logger.info(f"[BATCH] Encontradas {len(pendientes)} llamadas para auditar.")
+        exitosas = 0
+        fallidas = 0
+        for llamada, cliente in pendientes:
+            try:
+                config_prompt = db.exec(
+                    select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
+                ).first()
+                prompt_base_str = config_prompt.valor if config_prompt else None
+                resultado_ia, puntos, error_critico = ejecutar_auditoria_ia(
+                    transcripcion=llamada.transcripcion,
+                    llamada=llamada,
+                    cliente=cliente,
+                    db=db,
+                    prompt_base=prompt_base_str
+                )
+                nueva_evaluacion = Evaluacion(
+                    llamada_id=llamada.id,
+                    detalles_json=resultado_ia,
+                    resumen_auditoria=resultado_ia.get("Resumen", "Sin resumen"),
+                    estado_auditoria=resultado_ia.get("Estatus_detectado", "Desconocido"),
+                    puntaje_logrado=puntos,
+                    error_critico=error_critico
+                )
+                db.add(nueva_evaluacion)
+                db.commit()
+                exitosas += 1
+                logger.info(f"  OK Llamada #{llamada.id} ({cliente.nombre_empresa}) auditada.")
+            except Exception as e:
+                fallidas += 1
+                logger.error(f"  ERROR Llamada #{llamada.id}: {e}")
+        logger.info(f"[BATCH] Ciclo terminado - Exitosas: {exitosas} | Fallidas: {fallidas}")
+
+# =============================================================================
+# CICLO DE VIDA DEL SERVIDOR
+# =============================================================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Llamamos a la función que conecta a PostgreSQL y crea las tablas
     create_db_and_tables()
-    print("¡Servidor en línea y Base de Datos conectada!")
+    scheduler.add_job(
+        procesar_llamadas_pendientes,
+        trigger="interval",
+        minutes=240,
+        id="auditar_pendientes",
+        replace_existing=True,
+        max_instances=1,
+    )
+    scheduler.start()
+    logger.info("Servidor en linea. Scheduler activo: auditoria cada 240 min.")
     yield
-    print("Servidor apagado.")
+    scheduler.shutdown()
+    logger.info("Servidor apagado.")
 
-# Inicializamos la aplicación FastAPI
-app = FastAPI(
-    title="API de QA Inteligente - Colektia",
-    version="1.0.0",
-    lifespan=lifespan
-)
+# =============================================================================
+# APP FASTAPI
+# =============================================================================
+app = FastAPI(title="API de QA Inteligente - Colektia", version="2.0.0", lifespan=lifespan)
 
-# Configuración CORS para permitir peticiones del frontend (Vite por defecto usa 5173)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
@@ -62,37 +123,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 2. EL ENDPOINT DE INGESTA (Historia de Usuario 05) ---
-@app.post("/api/v1/llamadas/ingesta", summary="Ingestar y guardar nueva llamada de Colly")
-def recibir_llamada(
-    datos: IngestaLlamadaColly,          # El Filtro (Pydantic valida el JSON aquí)
-    db: Session = Depends(get_session)   # La Conexión a la BD (Se abre y se cierra sola)
-):
-    """
-    Recibe el JSON de Colly, verifica si la empresa existe, y guarda la llamada permanentemente.
-    """
-    
-    # PASO A: Buscar o Crear el Cliente (Empresa)
-    # Buscamos en la BD si ya existe un cliente con el nombre que viene en el JSON
+# =============================================================================
+# HU05 - ENDPOINT DE INGESTA (solo guarda, no llama a IA)
+# =============================================================================
+@app.post("/api/v1/llamadas/ingesta", summary="HU05: Ingestar y guardar nueva llamada de Colly")
+def recibir_llamada(datos: IngestaLlamadaColly, db: Session = Depends(get_session)):
     statement = select(Cliente).where(Cliente.nombre_empresa == datos.Empresa)
     cliente_bd = db.exec(statement).first()
-
-    # Si no existe, lo creamos y lo guardamos inmediatamente
     if not cliente_bd:
         cliente_bd = Cliente(nombre_empresa=datos.Empresa)
         db.add(cliente_bd)
         db.commit()
-        db.refresh(cliente_bd) # Refrescamos para obtener el ID que le dio PostgreSQL
+        db.refresh(cliente_bd)
 
-    # PASO B: Empaquetar los datos variables (Fechas y Balances)
-    # Metemos todo lo que es "variable" en un diccionario para la columna JSON
     metadatos_llamada = {
         "id_colly": datos.Call_ID,
         "cuenta_cliente": datos.Cuenta,
         "estatus_colly": datos.Estatus,
         "proveedor": datos.Proveedor,
-        # Convertimos la fecha de Python a texto (ISO) para poder guardarla en el JSON
-        "fecha_llamada": datos.fecha_llamada.isoformat(), 
+        "fecha_llamada": datos.fecha_llamada.isoformat(),
         "fecha_vencimiento": datos.fecha_vencimiento,
         "dias_mora": datos.dias_mora,
         "balances": {
@@ -101,97 +150,60 @@ def recibir_llamada(
             "total": datos.total_balance
         }
     }
-
-    # PASO C: Crear el registro de la Llamada
-    # Usamos nuestro modelo de SQLModel y le pasamos los datos
     nueva_llamada = Llamada(
-        cliente_id=cliente_bd.id, # El ID del cliente que buscamos/creamos arriba
+        cliente_id=cliente_bd.id,
         call_id_origen=datos.Call_ID,
         grabacion_url=datos.Grabacion,
         transcripcion=datos.Transcrip,
         metadatos_json=metadatos_llamada
     )
-
-    # PASO D: Guardar permanentemente en PostgreSQL
     db.add(nueva_llamada)
     db.commit()
     db.refresh(nueva_llamada)
-
-    # PASO E: LA MAGIA DE LA IA (Se ejecuta automáticamente)
-    # =========================================================
-    try:
-        print(f"Iniciando auditoría IA para el cliente: {cliente_bd.nombre_empresa}")
-        
-        # 0. Obtener el prompt base desde la BD
-        statement_prompt = select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
-        config_prompt = db.exec(statement_prompt).first()
-        prompt_base_str = config_prompt.valor if config_prompt else None
-
-        # 1. Llamamos a Gemini
-        resultado_ia, puntos, error_critico = ejecutar_auditoria_ia(
-            transcripcion=nueva_llamada.transcripcion,
-            llamada=nueva_llamada,
-            cliente=cliente_bd,
-            db=db,
-            prompt_base=prompt_base_str
-        )
-
-        # 3. Guardamos el resultado de la IA
-        nueva_evaluacion = Evaluacion(
-            llamada_id=nueva_llamada.id,
-            detalles_json=resultado_ia,
-            resumen_auditoria=resultado_ia.get("Resumen", "Sin resumen"),
-            estado_auditoria=resultado_ia.get("Estatus_detectado", "Desconocido"),
-            puntaje_logrado=puntos,
-            error_critico=error_critico
-        )
-        
-        db.add(nueva_evaluacion)
-        db.commit()
-        print("Evaluación de IA guardada con éxito.")
-        
-    except Exception as e:
-        # Usamos try/except porque si Gemini se cae o el internet falla, 
-        # no queremos que se pierda la llamada que ya guardamos en el Paso D.
-        print(f"Error en la evaluación de IA: {e}")
-    # =========================================================
-
-    # PASO F: Responder éxito al sistema que envió la llamada
     return {
-        "estado": "éxito",
-        "mensaje": "Llamada procesada y guardada correctamente",
+        "estado": "exito",
+        "mensaje": "Llamada recibida y encolada para auditoria automatica",
         "id_interno": nueva_llamada.id,
         "empresa": cliente_bd.nombre_empresa
     }
 
-# --- 3. HU19: VISTA DETALLE DE AUDITORÍA ---
-@app.get("/api/v1/evaluaciones/{llamada_id}", summary="Obtener detalle completo de una auditoría")
-def obtener_detalle_evaluacion(
-    llamada_id: int, 
-    db: Session = Depends(get_session)
-):
-    """
-    Busca una llamada por su ID y devuelve toda su información junto con 
-    la evaluación de la IA y los datos del cliente.
-    """
-    # Buscamos la Llamada, la Evaluación y el Cliente uniendo las tablas
+# =============================================================================
+# HU16 - ENDPOINTS DEL BATCH
+# =============================================================================
+@app.post("/api/v1/auditoria/ejecutar", summary="HU16: Disparar manualmente el batch de auditoria")
+def disparar_auditoria_manual(background_tasks: BackgroundTasks):
+    background_tasks.add_task(procesar_llamadas_pendientes)
+    return {"estado": "iniciado", "mensaje": "Procesando llamadas pendientes en segundo plano."}
+
+@app.get("/api/v1/auditoria/estado", summary="HU16: Ver estado de la cola de auditoria")
+def estado_cola_auditoria(db: Session = Depends(get_session)):
+    total_llamadas = db.exec(select(func.count(Llamada.id))).first() or 0
+    total_evaluadas = db.exec(select(func.count(Evaluacion.id))).first() or 0
+    pendientes = total_llamadas - total_evaluadas
+    job = scheduler.get_job("auditar_pendientes")
+    proxima_ejecucion = str(job.next_run_time) if job and job.next_run_time else "No programada"
+    return {
+        "total_llamadas_recibidas": total_llamadas,
+        "total_auditadas": total_evaluadas,
+        "pendientes_de_auditoria": pendientes,
+        "proxima_ejecucion_automatica": proxima_ejecucion
+    }
+
+# =============================================================================
+# HU19 - VISTA DETALLE DE AUDITORIA
+# =============================================================================
+@app.get("/api/v1/evaluaciones/{llamada_id}", summary="HU19: Detalle completo de una auditoria")
+def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_session)):
     statement = (
         select(Llamada, Evaluacion, Cliente)
         .join(Evaluacion)
         .join(Cliente, Llamada.cliente_id == Cliente.id)
         .where(Llamada.id == llamada_id)
     )
-    
     resultado = db.exec(statement).first()
-
-    # Si alguien busca un ID que no existe, lanzamos un error 404
     if not resultado:
-        raise HTTPException(status_code=404, detail="Evaluación no encontrada")
-
-    # Separamos los 3 objetos que nos devolvió la base de datos
+        raise HTTPException(status_code=404, detail="Evaluacion no encontrada")
     llamada, evaluacion, cliente = resultado
-
-    # Empaquetamos todo en un JSON para el Frontend
     return {
         "id_auditoria": evaluacion.id,
         "cliente": cliente.nombre_empresa,
@@ -211,56 +223,42 @@ def obtener_detalle_evaluacion(
         "transcripcion_completa": llamada.transcripcion
     }
 
-# --- 4. HU17: DASHBOARD DE KPIs GLOBALES ---
-@app.get("/api/v1/dashboard", summary="Obtener métricas globales para gráficos")
+# =============================================================================
+# HU17 - DASHBOARD DE KPIs (incluye porcentaje de cobertura SLA)
+# =============================================================================
+@app.get("/api/v1/dashboard", summary="HU17: Metricas globales para graficos")
 def obtener_kpis_dashboard(db: Session = Depends(get_session)):
-    """
-    Calcula los KPIs generales de toda la operación:
-    Total de llamadas, calidad promedio y distribución de estatus.
-    """
-    # 1. Total de llamadas evaluadas
+    total_llamadas = db.exec(select(func.count(Llamada.id))).first() or 0
     total_evaluaciones = db.exec(select(func.count(Evaluacion.id))).first() or 0
-
-    # 2. Promedio de calidad (Puntaje)
     promedio_puntaje = db.exec(select(func.avg(Evaluacion.puntaje_logrado))).first() or 0.0
-
-    # 3. Distribución de Estatus (Agrupamos y contamos)
     statement_estatus = (
         select(Evaluacion.estado_auditoria, func.count(Evaluacion.id))
         .group_by(Evaluacion.estado_auditoria)
     )
     distribucion_bd = db.exec(statement_estatus).all()
-    
-    # Convertimos el resultado de la BD a un diccionario limpio
     distribucion_dict = {estatus: cantidad for estatus, cantidad in distribucion_bd}
-
-    # Empaquetamos todo para el gráfico del frontend
+    cobertura_pct = round((total_evaluaciones / total_llamadas * 100), 1) if total_llamadas > 0 else 0.0
     return {
         "kpis_globales": {
+            "total_llamadas_recibidas": total_llamadas,
             "total_llamadas_auditadas": total_evaluaciones,
-            "calidad_promedio": round(promedio_puntaje, 2), # Redondeamos a 2 decimales
-            "puntaje_maximo_posible": 6 # Son 6 pasos en la rúbrica
+            "cobertura_porcentaje": cobertura_pct,
+            "calidad_promedio": round(promedio_puntaje, 2),
+            "puntaje_maximo_posible": 6
         },
         "distribucion_estatus": distribucion_dict
     }
 
-# --- HU06: VALIDACIÓN DE ESQUEMA (Intercepción de errores) ---
+# =============================================================================
+# HU06 - VALIDACION DE ESQUEMA
+# =============================================================================
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """
-    Atrapa cualquier JSON mal formado antes de que toque la base de datos,
-    registra la alerta en el log del sistema y devuelve un error 422 claro.
-    """
-    # 1. Extraemos qué fue exactamente lo que intentaron enviar
     cuerpo_recibido = await request.body()
-    
-    # 2. Generamos el LOG de alerta para el sistema/terminal
-    logger.error("🚨 [HU06 ALERTA] Se rechazó un JSON mal formado.")
+    logger.error("[HU06 ALERTA] Se rechazo un JSON mal formado.")
     logger.error(f"URL de intento: {request.url}")
     logger.error(f"Errores detallados: {exc.errors()}")
     logger.error(f"JSON recibido: {cuerpo_recibido.decode('utf-8')}")
-    
-    # 3. Devolvemos la respuesta al sistema origen (ej. Colly) rechazando la carga
     return JSONResponse(
         status_code=422,
         content={
@@ -270,30 +268,21 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         }
     )
 
-# --- HU07: LISTADO HISTÓRICO DE LLAMADAS ---
-@app.get("/api/v1/llamadas", summary="Listado histórico de llamadas auditadas")
+# =============================================================================
+# HU07 - LISTADO HISTORICO
+# =============================================================================
+@app.get("/api/v1/llamadas", summary="HU07: Listado historico de llamadas")
 def listar_llamadas(db: Session = Depends(get_session)):
-    """
-    Devuelve una lista resumida de todas las llamadas procesadas,
-    ordenadas de la más reciente a la más antigua.
-    Ideal para la tabla del Dashboard (Frontend).
-    """
-    # 1. Hacemos la consulta uniendo Llamada, Evaluacion (outer) y Cliente
     statement = (
         select(Llamada, Evaluacion, Cliente)
         .join(Cliente, Llamada.cliente_id == Cliente.id)
-        .join(Evaluacion, Llamada.id == Evaluacion.llamada_id, isouter=True) 
+        .join(Evaluacion, Llamada.id == Evaluacion.llamada_id, isouter=True)
         .order_by(Llamada.id.desc())
     )
-    
     resultados_bd = db.exec(statement).all()
-
-    # 2. Formateamos la respuesta para que el Frontend la lea fácil
     lista_historial = []
-    
     for llamada, evaluacion, cliente in resultados_bd:
         metadatos = llamada.metadatos_json or {}
-        
         item = {
             "id_llamada": llamada.id,
             "empresa": cliente.nombre_empresa,
@@ -308,22 +297,17 @@ def listar_llamadas(db: Session = Depends(get_session)):
             }
         }
         lista_historial.append(item)
+    return {"total_registros": len(lista_historial), "data": lista_historial}
 
-    # 3. Devolvemos el total y la lista
-    return {
-        "total_registros": len(lista_historial),
-        "data": lista_historial
-    }
-
-@app.post("/api/v1/rubricas", summary="HU09: Crear una nueva rúbrica con criterios")
+# =============================================================================
+# HU09 / HU29 - RUBRICAS
+# =============================================================================
+@app.post("/api/v1/rubricas", summary="HU09: Crear rubrica con criterios")
 def crear_rubrica(datos: RubricaCreate, db: Session = Depends(get_session)):
-    # 1. Crear la cabecera de la rúbrica
     nueva_rubrica = Rubrica(nombre=datos.nombre, empresa=datos.empresa)
     db.add(nueva_rubrica)
     db.commit()
     db.refresh(nueva_rubrica)
-    
-    # 2. Crear los criterios asociados
     for p in datos.puntos:
         nuevo_criterio = Criterio(
             nombre=p.nombre,
@@ -333,14 +317,12 @@ def crear_rubrica(datos: RubricaCreate, db: Session = Depends(get_session)):
             rubrica_id=nueva_rubrica.id
         )
         db.add(nuevo_criterio)
-    
     db.commit()
-    return {"mensaje": "Rúbrica creada con éxito", "id": nueva_rubrica.id}
+    return {"mensaje": "Rubrica creada con exito", "id": nueva_rubrica.id}
 
-@app.get("/api/v1/rubricas", summary="HU29: Listar todas las rúbricas")
+@app.get("/api/v1/rubricas", summary="HU29: Listar todas las rubricas")
 def listar_rubricas(db: Session = Depends(get_session)):
-    statement = select(Rubrica)
-    resultados = db.exec(statement).all()
+    resultados = db.exec(select(Rubrica)).all()
     lista = []
     for r in resultados:
         criterios = db.exec(select(Criterio).where(Criterio.rubrica_id == r.id)).all()
@@ -349,48 +331,41 @@ def listar_rubricas(db: Session = Depends(get_session)):
             "nombre": r.nombre,
             "empresa": r.empresa,
             "activo": r.activo,
-            "criterios": [{"nombre": c.nombre, "descripcion": c.descripcion, "peso": c.peso, "es_severidad": c.es_severidad} for c in criterios]
+            "criterios": [
+                {"nombre": c.nombre, "descripcion": c.descripcion, "peso": c.peso, "es_severidad": c.es_severidad}
+                for c in criterios
+            ]
         })
     return lista
 
-class PromptUpdate(BaseModel):
-    texto: str
-
+# =============================================================================
+# HU26 - TUNING DE PROMPT
+# =============================================================================
 @app.get("/api/v1/config/prompt", summary="HU26: Obtener el prompt actual de la IA")
 def obtener_prompt(db: Session = Depends(get_session)):
-    statement = select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
-    config = db.exec(statement).first()
+    config = db.exec(
+        select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
+    ).first()
     if config:
         return {"prompt": config.valor}
-    
-    prompt_default = """Eres un auditor automático de calidad de llamadas de cobranza de COLEKTIA.
-    
-DATOS DE LA LLAMADA:
-- ID: {llamada_id}
-- Cliente: {cliente_nombre}
-- Estatus original: {estatus_original}
-
-GUION ESPECÍFICO PARA ESTE CLIENTE:
-{guion_dinamico}
-
-TRANSCRIPCIÓN:
-"{transcripcion}"
-
-Recibirás un registro de llamada con esta información...
-(Puedes agregar aquí el resto de las instrucciones de QA)
-"""
+    prompt_default = (
+        "Eres un auditor automatico de calidad de llamadas de cobranza de COLEKTIA.\n\n"
+        "DATOS DE LA LLAMADA:\n- ID: {llamada_id}\n- Cliente: {cliente_nombre}\n"
+        "- Estatus original: {estatus_original}\n\n"
+        "GUION ESPECIFICO PARA ESTE CLIENTE:\n{guion_dinamico}\n\n"
+        "TRANSCRIPCION:\n\"{transcripcion}\"\n"
+    )
     return {"prompt": prompt_default}
 
 @app.post("/api/v1/config/prompt", summary="HU26: Actualizar el prompt base de la IA")
 def actualizar_prompt(datos: PromptUpdate, db: Session = Depends(get_session)):
-    statement = select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
-    config = db.exec(statement).first()
+    config = db.exec(
+        select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
+    ).first()
     if config:
         config.valor = datos.texto
         db.add(config)
     else:
-        nueva_config = ConfiguracionSistema(clave="PROMPT_BASE", valor=datos.texto)
-        db.add(nueva_config)
-    
+        db.add(ConfiguracionSistema(clave="PROMPT_BASE", valor=datos.texto))
     db.commit()
-    return {"mensaje": "Prompt actualizado con éxito"}
+    return {"mensaje": "Prompt actualizado con exito"}
