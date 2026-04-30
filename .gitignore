@@ -22,3 +22,6 @@ Thumbs.db
 node_modules/
 api_seguridad.log
 *.log
+.gitignore  
+*.xlsx
+*.pdf
