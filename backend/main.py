@@ -208,6 +208,85 @@ def estado_cola_auditoria(db: Session = Depends(get_session)):
     }
 
 # =============================================================================
+# HU27 - RE-AUDITORÍA INDIVIDUAL (validación de calidad de la IA)
+# Permite al analista QA forzar una nueva auditoría sobre una llamada ya evaluada.
+# Borra la evaluación anterior y genera una nueva desde cero con Gemini.
+# =============================================================================
+@app.post(
+    "/api/v1/auditoria/reauditar/{llamada_id}",
+    summary="HU27: Re-auditar una llamada ya evaluada (solo analista_qa / admin)",
+)
+def reauditar_llamada(
+    llamada_id: int,
+    db: Session = Depends(get_session),
+    current_user: Usuario = Depends(require_qa_or_admin),
+):
+    # 1. Obtener la llamada y su cliente
+    row = db.exec(
+        select(Llamada, Cliente)
+        .join(Cliente, Llamada.cliente_id == Cliente.id)
+        .where(Llamada.id == llamada_id)
+    ).first()
+    if not row:
+        raise HTTPException(status_code=404, detail=f"Llamada #{llamada_id} no encontrada")
+    llamada, cliente = row
+
+    # 2. Eliminar evaluación anterior si existe
+    evaluacion_anterior = db.exec(
+        select(Evaluacion).where(Evaluacion.llamada_id == llamada_id)
+    ).first()
+    if evaluacion_anterior:
+        db.delete(evaluacion_anterior)
+        db.commit()
+        logger.info(f"[REAUDITORIA] Evaluacion anterior de llamada #{llamada_id} eliminada por {current_user.email}")
+
+    # 3. Ejecutar nueva auditoría con Gemini
+    try:
+        config_prompt = db.exec(
+            select(ConfiguracionSistema).where(ConfiguracionSistema.clave == "PROMPT_BASE")
+        ).first()
+        prompt_base_str = config_prompt.valor if config_prompt else None
+
+        resultado_ia, puntos, error_critico = ejecutar_auditoria_ia(
+            transcripcion=llamada.transcripcion,
+            llamada=llamada,
+            cliente=cliente,
+            db=db,
+            prompt_base=prompt_base_str,
+        )
+
+        nueva_evaluacion = Evaluacion(
+            llamada_id=llamada.id,
+            detalles_json=resultado_ia,
+            resumen_auditoria=resultado_ia.get("Resumen", "Sin resumen"),
+            estado_auditoria=resultado_ia.get("Estatus_detectado", "Desconocido"),
+            puntaje_logrado=puntos,
+            error_critico=error_critico,
+            estado_validacion="pendiente",  # Resetear validación humana
+        )
+        db.add(nueva_evaluacion)
+        db.commit()
+        db.refresh(nueva_evaluacion)
+
+        logger.info(
+            f"[REAUDITORIA] Llamada #{llamada_id} re-auditada por {current_user.email} "
+            f"— puntaje: {puntos} | error_critico: {error_critico}"
+        )
+        return {
+            "estado": "completado",
+            "llamada_id": llamada_id,
+            "empresa": cliente.nombre_empresa,
+            "puntaje_logrado": puntos,
+            "error_critico": error_critico,
+            "resumen": resultado_ia.get("Resumen", ""),
+            "re_auditado_por": current_user.email,
+        }
+
+    except Exception as e:
+        logger.error(f"[REAUDITORIA] Error en llamada #{llamada_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al re-auditar: {str(e)}")
+
+# =============================================================================
 # HU19 - VISTA DETALLE DE AUDITORIA
 # =============================================================================
 @app.get("/api/v1/evaluaciones/{llamada_id}", summary="HU19/HU14: Detalle completo de una auditoria con feedback por criterio")

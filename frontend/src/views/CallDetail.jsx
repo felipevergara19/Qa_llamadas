@@ -1,19 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
-import { ArrowLeft, User, Headphones, CheckCircle2, AlertCircle, Info } from 'lucide-react';
+import { ArrowLeft, User, Headphones, CheckCircle2, AlertCircle, Info, RefreshCw } from 'lucide-react';
 
 export default function CallDetail() {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [reauditando, setReauditando] = useState(false);
+  const [reauditoriaMsg, setReauditoriaMsg] = useState(null); // { ok, texto }
 
-  useEffect(() => {
+  const fetchData = () => {
+    setLoading(true);
     api.get(`/api/v1/evaluaciones/${id}`)
       .then(r => setData(r.data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [id]);
+  };
+
+  useEffect(() => { fetchData(); }, [id]);
+
+  const handleReauditar = async () => {
+    if (!window.confirm('¿Re-auditar esta llamada con IA? La evaluación actual se reemplazará.')) return;
+    setReauditando(true);
+    setReauditoriaMsg(null);
+    try {
+      const res = await api.post(`/api/v1/auditoria/reauditar/${id}`);
+      setReauditoriaMsg({ ok: true, texto: `Re-auditoría completada — ${res.data.puntaje_logrado} pts${res.data.error_critico ? ' · ERROR CRÍTICO detectado' : ''}` });
+      fetchData(); // recargar el panel con los nuevos resultados
+    } catch (e) {
+      const msg = e.response?.data?.detail || 'Error al re-auditar';
+      setReauditoriaMsg({ ok: false, texto: msg });
+    } finally {
+      setReauditando(false);
+    }
+  };
 
   if (loading) return <div className="p-8 text-gray-500">Cargando detalles de la auditoria...</div>;
   if (!data)   return <div className="p-8 text-red-500">Error al cargar la llamada o no existe evaluacion.</div>;
@@ -64,6 +85,27 @@ export default function CallDetail() {
           <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${badgeValidacion}`}>
             Validacion: {estadoValidacion}
           </span>
+
+          {/* HU27: Botón re-auditoría individual */}
+          <div className="mt-4">
+            <button
+              onClick={handleReauditar}
+              disabled={reauditando}
+              className="w-full flex items-center justify-center gap-2 border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-600 hover:text-blue-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${reauditando ? 'animate-spin' : ''}`} />
+              {reauditando ? 'Re-auditando con IA…' : 'Re-auditar esta llamada'}
+            </button>
+            {reauditoriaMsg && (
+              <div className={`mt-2 text-xs px-3 py-2 rounded-lg font-medium ${
+                reauditoriaMsg.ok
+                  ? 'bg-green-50 text-green-700 border border-green-200'
+                  : 'bg-red-50 text-red-700 border border-red-200'
+              }`}>
+                {reauditoriaMsg.ok ? '✓ ' : '✗ '}{reauditoriaMsg.texto}
+              </div>
+            )}
+          </div>
 
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div className="bg-blue-50 p-3 rounded-lg">
