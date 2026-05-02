@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
-import { Save, Plus, Trash2, Edit3, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Save, Plus, Trash2, Edit3, ShieldAlert, CheckCircle2, PlayCircle, RefreshCw, Clock, CheckSquare, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('prompt');
@@ -13,6 +13,12 @@ export default function Settings() {
   // -- RUBRICAS STATE --
   const [rubricas, setRubricas] = useState([]);
   const [rubricasLoading, setRubricasLoading] = useState(false);
+
+  // -- AUDITORIA STATE --
+  const [auditoriaEstado, setAuditoriaEstado] = useState(null);
+  const [auditoriaLoading, setAuditoriaLoading] = useState(false);
+  const [auditoriaRunning, setAuditoriaRunning] = useState(false);
+  const [auditoriaResult, setAuditoriaResult] = useState(null);
   
   // -- FORM NUEVA RÚBRICA --
   const [showForm, setShowForm] = useState(false);
@@ -25,6 +31,7 @@ export default function Settings() {
   useEffect(() => {
     fetchPrompt();
     fetchRubricas();
+    fetchAuditoriaEstado();
   }, []);
 
   const fetchPrompt = async () => {
@@ -81,6 +88,33 @@ export default function Settings() {
     setNewRubrica({ ...newRubrica, puntos: updated });
   };
 
+  const fetchAuditoriaEstado = async () => {
+    setAuditoriaLoading(true);
+    try {
+      const res = await api.get('/api/v1/auditoria/estado');
+      setAuditoriaEstado(res.data);
+    } catch (e) {
+      console.error("Error fetching estado auditoría:", e);
+    } finally {
+      setAuditoriaLoading(false);
+    }
+  };
+
+  const ejecutarAuditoria = async () => {
+    setAuditoriaRunning(true);
+    setAuditoriaResult(null);
+    try {
+      const res = await api.post('/api/v1/auditoria/ejecutar');
+      setAuditoriaResult({ ok: true, data: res.data });
+      // Refrescar el estado después de ejecutar
+      await fetchAuditoriaEstado();
+    } catch (e) {
+      setAuditoriaResult({ ok: false, msg: e.response?.data?.detail || 'Error al ejecutar' });
+    } finally {
+      setAuditoriaRunning(false);
+    }
+  };
+
   const submitRubrica = async (e) => {
     e.preventDefault();
     try {
@@ -122,6 +156,16 @@ export default function Settings() {
             }`}
           >
             Gestor de Rúbricas (HU09, HU29)
+          </button>
+          <button
+            onClick={() => { setActiveTab('auditoria'); fetchAuditoriaEstado(); }}
+            className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'auditoria'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Motor de Auditoría IA (HU16)
           </button>
         </nav>
       </div>
@@ -340,6 +384,135 @@ export default function Settings() {
               ))
             )}
           </div>
+        </div>
+      )}
+
+      {activeTab === 'auditoria' && (
+        <div className="space-y-6">
+
+          {/* ESTADO DE LA COLA */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-lg font-bold text-gray-800 flex items-center">
+                <Clock className="w-5 h-5 mr-2 text-blue-500" />
+                Estado de la Cola
+              </h2>
+              <button
+                onClick={fetchAuditoriaEstado}
+                disabled={auditoriaLoading}
+                className="text-sm text-gray-500 hover:text-blue-600 flex items-center gap-1 transition-colors"
+              >
+                <RefreshCw className={`w-4 h-4 ${auditoriaLoading ? 'animate-spin' : ''}`} />
+                Actualizar
+              </button>
+            </div>
+
+            {auditoriaLoading && !auditoriaEstado ? (
+              <p className="text-gray-400 text-sm">Cargando estado...</p>
+            ) : auditoriaEstado ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-slate-50 rounded-lg p-4 text-center border border-slate-100">
+                  <p className="text-3xl font-bold text-slate-700">{auditoriaEstado.total_llamadas ?? '—'}</p>
+                  <p className="text-xs text-slate-500 mt-1 font-medium uppercase">Total llamadas</p>
+                </div>
+                <div className="bg-green-50 rounded-lg p-4 text-center border border-green-100">
+                  <p className="text-3xl font-bold text-green-600">{auditoriaEstado.auditadas ?? '—'}</p>
+                  <p className="text-xs text-green-500 mt-1 font-medium uppercase">Auditadas</p>
+                </div>
+                <div className="bg-amber-50 rounded-lg p-4 text-center border border-amber-100">
+                  <p className="text-3xl font-bold text-amber-600">{auditoriaEstado.pendientes ?? '—'}</p>
+                  <p className="text-xs text-amber-500 mt-1 font-medium uppercase">Pendientes</p>
+                </div>
+                <div className="bg-blue-50 rounded-lg p-4 text-center border border-blue-100">
+                  <p className="text-sm font-semibold text-blue-700 break-all">
+                    {auditoriaEstado.proxima_ejecucion
+                      ? new Date(auditoriaEstado.proxima_ejecucion).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })
+                      : '—'}
+                  </p>
+                  <p className="text-xs text-blue-500 mt-1 font-medium uppercase">Próximo ciclo auto</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-400 text-sm">No se pudo cargar el estado.</p>
+            )}
+          </div>
+
+          {/* BOTÓN RE-AUDITAR */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h2 className="text-lg font-bold text-gray-800 flex items-center mb-2">
+              <PlayCircle className="w-5 h-5 mr-2 text-green-500" />
+              Ejecutar Auditoría Manual
+            </h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Procesa inmediatamente todas las llamadas pendientes en lotes de hasta 100.
+              Úsalo después de cargar nuevas llamadas, actualizar rúbricas o modificar el prompt.
+            </p>
+
+            <button
+              onClick={ejecutarAuditoria}
+              disabled={auditoriaRunning}
+              className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold px-8 py-3 rounded-lg text-base transition-colors shadow-sm"
+            >
+              {auditoriaRunning ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Auditando con Gemini…
+                </>
+              ) : (
+                <>
+                  <PlayCircle className="w-5 h-5" />
+                  Re-auditar llamadas pendientes
+                </>
+              )}
+            </button>
+
+            {/* Resultado */}
+            {auditoriaResult && (
+              <div className={`mt-5 p-4 rounded-lg border flex items-start gap-3 ${
+                auditoriaResult.ok
+                  ? 'bg-green-50 border-green-200 text-green-800'
+                  : 'bg-red-50 border-red-200 text-red-800'
+              }`}>
+                {auditoriaResult.ok ? (
+                  <CheckCircle2 className="w-5 h-5 mt-0.5 flex-shrink-0 text-green-600" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0 text-red-600" />
+                )}
+                <div className="text-sm">
+                  {auditoriaResult.ok ? (
+                    <>
+                      <p className="font-semibold">¡Auditoría completada!</p>
+                      {auditoriaResult.data?.procesadas !== undefined && (
+                        <p className="mt-1">
+                          {auditoriaResult.data.procesadas} llamada(s) auditadas
+                          {auditoriaResult.data.errores > 0 && ` · ${auditoriaResult.data.errores} con error`}.
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-semibold">Error al ejecutar</p>
+                      <p className="mt-1">{auditoriaResult.msg}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* NOTA INFORMATIVA */}
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-700 flex gap-3">
+            <CheckSquare className="w-5 h-5 flex-shrink-0 mt-0.5 text-blue-500" />
+            <div>
+              <p className="font-semibold">Ciclo automático activo</p>
+              <p className="mt-1">
+                El sistema audita automáticamente cada 240 minutos. El botón de arriba es para
+                re-procesar llamadas pendientes de forma inmediata, por ejemplo después de actualizar
+                una rúbrica o el prompt de la IA.
+              </p>
+            </div>
+          </div>
+
         </div>
       )}
     </div>
