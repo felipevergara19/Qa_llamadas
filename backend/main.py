@@ -329,7 +329,7 @@ def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_sessio
 
     # HU14: Armar feedback enriquecido por criterio
     detalles = evaluacion.detalles_json or {}
-    CAMPOS_META = {"Resumen", "Estatus_detectado", "Estatus_coherente"}
+    CAMPOS_META = {"Resumen", "Estatus_detectado", "Estatus_coherente", "Errores_criticos_encontrados"}
     feedback_criterios = []
     for nombre, resultado_ia in detalles.items():
         if nombre in CAMPOS_META:
@@ -344,6 +344,15 @@ def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_sessio
             "es_severidad": info.get("es_severidad", False),
         })
 
+    # Lista de criterios de severidad que fallaron (guardada por la IA o recalculada)
+    errores_criticos = detalles.get("Errores_criticos_encontrados", [])
+    # Si está vacío pero hay error_critico, recalcular desde los criterios
+    if not errores_criticos and evaluacion.error_critico:
+        errores_criticos = [
+            item["criterio"] for item in feedback_criterios
+            if item["es_severidad"] and not item["resultado"]
+        ]
+
     return {
         "id_auditoria": evaluacion.id,
         "cliente": cliente.nombre_empresa,
@@ -357,6 +366,7 @@ def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_sessio
             "estatus_detectado": evaluacion.estado_auditoria,
             "puntaje_total": evaluacion.puntaje_logrado,
             "error_critico": evaluacion.error_critico,
+            "errores_criticos": errores_criticos,       # <-- nuevo: lista de criterios que fallaron
             "resumen_analisis": evaluacion.resumen_auditoria,
             "estado_validacion": evaluacion.estado_validacion,
         },

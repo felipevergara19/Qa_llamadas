@@ -35,26 +35,56 @@ def ejecutar_auditoria_ia(transcripcion, llamada, cliente, db: Session, prompt_b
 
     guion_dinamico = ""
     criterios = []
-    
+    criterios_json_keys = []   # para construir el ejemplo de salida dinámicamente
+
     if rubrica_activa:
         criterios = db.exec(select(Criterio).where(Criterio.rubrica_id == rubrica_activa.id)).all()
         for c in criterios:
-            guion_dinamico += f"- {c.nombre} (Severidad: {'Sí' if c.es_severidad else 'No'}): {c.descripcion}\n"
+            tipo_label = "⚠ SEVERIDAD — fallo crítico si vale 0" if c.es_severidad else f"peso {c.peso} pt(s)"
+            guion_dinamico += f'- CRITERIO "{c.nombre}" [{tipo_label}]:\n  {c.descripcion}\n\n'
+            criterios_json_keys.append(f'  "{c.nombre}": 1')
     else:
         guion_dinamico = "No se encontró un guion específico para este cliente y rango de mora."
-    
+
+    # Formato JSON de salida con las claves exactas de los criterios de la rúbrica
+    if criterios_json_keys:
+        ejemplo_json = (
+            "{\n"
+            + ",\n".join(criterios_json_keys)
+            + ',\n  "Estatus_detectado": "Compromiso",\n'
+            + '  "Estatus_coherente": 1,\n'
+            + '  "Resumen": "Observación general de la llamada.",\n'
+            + '  "Errores_criticos_encontrados": ["Nombre del criterio que falló (si aplica)"]\n'
+            + "}"
+        )
+    else:
+        ejemplo_json = (
+            '{\n'
+            '  "Saludo": 1,\n'
+            '  "Confirmacion_identidad": 1,\n'
+            '  "Entrega_mensaje": 1,\n'
+            '  "Negociacion": 1,\n'
+            '  "Agenda_compromiso": 0,\n'
+            '  "Cierre": 0,\n'
+            '  "Estatus_detectado": "Compromiso",\n'
+            '  "Estatus_coherente": 1,\n'
+            '  "Resumen": "Observación general...",\n'
+            '  "Errores_criticos_encontrados": []\n'
+            "}"
+        )
+
     # 2. Tu Prompt Maestro (lo guardamos en una variable)
     prompt_default = f"""
     Eres un auditor automático de calidad de llamadas de cobranza de COLEKTIA.
-    
+
     DATOS DE LA LLAMADA:
     - ID: {llamada.id}
     - Cliente: {cliente.nombre_empresa}
     - Estatus original: {llamada.metadatos_json.get('estatus_colly', 'Desconocido')}
-    
-    GUION ESPECÍFICO PARA ESTE CLIENTE:
+
+    CRITERIOS A EVALUAR (usa estos nombres EXACTOS como claves del JSON de salida):
     {guion_dinamico}
-    
+
     TRANSCRIPCIÓN:
     "{transcripcion}"
 
@@ -242,23 +272,19 @@ Compara el **Estatus_detectado** con el **Estatus original** (entregado en la en
 
 ### 🧾 FORMATO DE RESPUESTA (obligatorio)
 
-Responde **solo en JSON plano**, sin texto adicional ni explicaciones.
+Responde **solo en JSON plano**, sin texto adicional ni markdown ni bloques de código.
 
-Ejemplo de salida:
+REGLAS CRÍTICAS para el JSON:
+1. Usa como claves los nombres EXACTOS de los criterios listados arriba (distingue mayúsculas/minúsculas y tildes).
+2. Cada criterio vale **1** (cumplido) o **0** (no cumplido). Sin otros valores.
+3. Los criterios marcados como ⚠ SEVERIDAD que valgan 0 deben aparecer en "Errores_criticos_encontrados".
+4. Agrega siempre "Estatus_detectado", "Estatus_coherente", "Resumen" y "Errores_criticos_encontrados".
+5. "Errores_criticos_encontrados" es una lista de strings con el nombre exacto del criterio que falló (solo severidades). Si ninguno falló, devuelve lista vacía [].
 
-{{
-      "Saludo": 1,
-      "Confirmacion_identidad": 1,
-      "Entrega_mensaje": 1,
-      "Negociacion": 1,
-      "Agenda_compromiso": 0,
-      "Cierre": 0,
-      "Estatus_detectado": "Compromiso",
-      "Estatus_coherente": 1,
-      "Resumen": "Observación general..."
-}}
+Ejemplo de salida con los criterios de ESTA llamada:
 
-    }}
+{ejemplo_json}
+
     """
     
     prompt_final = prompt_base if prompt_base else prompt_default
@@ -297,17 +323,22 @@ Ejemplo de salida:
     # 5. Cálculo dinámico de puntaje y error crítico
     puntaje = 0
     error_critico = False
-    
+    errores_criticos_nombres = []
+
     for c in criterios:
-        # El JSON devuelto debería tener la llave del nombre del criterio o podemos sanitizarlo
-        # Si la IA usó espacios, tal vez sea un problema, pero asumimos que mapea bien si lo indicamos
-        # Buscamos en el JSON la nota del criterio
         nota = resultado_json.get(c.nombre, 0)
-        
-        if c.es_severidad and nota == 0:
+        # Normalizar: acepta 1, True, "1", "true"
+        aprobado = nota in (1, True, "1", "true")
+
+        if c.es_severidad and not aprobado:
             error_critico = True
-        
-        if not c.es_severidad:
-            puntaje += (nota * c.peso)
-            
+            errores_criticos_nombres.append(c.nombre)
+
+        if not c.es_severidad and aprobado:
+            puntaje += c.peso
+
+    # Inyectar en el resultado la lista de errores críticos encontrados por nosotros
+    # (por si la IA no los incluyó correctamente)
+    resultado_json["Errores_criticos_encontrados"] = errores_criticos_nombres
+
     return resultado_json, puntaje, error_critico

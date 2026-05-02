@@ -117,10 +117,34 @@ export default function CallDetail() {
             <div className={`p-3 rounded-lg ${data.resultados_ia.error_critico ? 'bg-red-50' : 'bg-green-50'}`}>
               <div className={`text-xs font-semibold uppercase ${data.resultados_ia.error_critico ? 'text-red-600' : 'text-green-600'}`}>Severidad</div>
               <div className={`text-sm font-bold mt-1 ${data.resultados_ia.error_critico ? 'text-red-900' : 'text-green-900'}`}>
-                {data.resultados_ia.error_critico ? 'Error Critico' : 'Sin errores'}
+                {data.resultados_ia.error_critico ? 'Error Crítico' : 'Sin errores'}
               </div>
             </div>
           </div>
+
+          {/* Banner de errores críticos con detalle */}
+          {data.resultados_ia.error_critico && (() => {
+            const errores = data.resultados_ia.errores_criticos || [];
+            return (
+              <div className="mt-3 bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-xs font-bold text-red-700 uppercase mb-1.5 flex items-center gap-1">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  Criterio(s) de severidad que fallaron
+                </p>
+                {errores.length > 0 ? (
+                  <ul className="space-y-1">
+                    {errores.map((e, i) => (
+                      <li key={i} className="text-xs text-red-800 bg-red-100 px-2 py-1 rounded font-medium">
+                        · {e}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-red-600 italic">Re-audita esta llamada para obtener el detalle.</p>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
         {/* HU14: FEEDBACK POR CRITERIO */}
