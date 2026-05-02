@@ -1,17 +1,22 @@
-from fastapi import FastAPI, Depends, HTTPException, Request, BackgroundTasks
+from fastapi import FastAPI, Depends, HTTPException, Request, BackgroundTasks, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.security import OAuth2PasswordRequestForm
 import logging
 from sqlmodel import Session, select, func
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from services import ejecutar_auditoria_ia
-from models import Cliente, Llamada, Evaluacion, Criterio, Rubrica, ConfiguracionSistema
+from models import Cliente, Llamada, Evaluacion, Criterio, Rubrica, ConfiguracionSistema, Usuario, RolUsuario
 from database import engine, get_session, create_db_and_tables
 from schemas import IngestaLlamadaColly
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
+from auth import (
+    hash_password, verify_password, create_access_token,
+    get_current_user, require_admin, require_qa_or_admin
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -36,6 +41,19 @@ class RubricaCreate(BaseModel):
 
 class PromptUpdate(BaseModel):
     texto: str
+
+class UsuarioCreate(BaseModel):
+    email: str
+    password: str
+    nombre: str
+    rol: RolUsuario = RolUsuario.analista_qa
+    cliente_id: Optional[int] = None
+
+class UsuarioUpdate(BaseModel):
+    nombre: Optional[str] = None
+    rol: Optional[RolUsuario] = None
+    cliente_id: Optional[int] = None
+    activo: Optional[bool] = None
 
 # =============================================================================
 # HU16 - PROCESAMIENTO EN LOTE (MICRO-BATCHING)
@@ -192,7 +210,7 @@ def estado_cola_auditoria(db: Session = Depends(get_session)):
 # =============================================================================
 # HU19 - VISTA DETALLE DE AUDITORIA
 # =============================================================================
-@app.get("/api/v1/evaluaciones/{llamada_id}", summary="HU19: Detalle completo de una auditoria")
+@app.get("/api/v1/evaluaciones/{llamada_id}", summary="HU19/HU14: Detalle completo de una auditoria con feedback por criterio")
 def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_session)):
     statement = (
         select(Llamada, Evaluacion, Cliente)
@@ -204,22 +222,69 @@ def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_sessio
     if not resultado:
         raise HTTPException(status_code=404, detail="Evaluacion no encontrada")
     llamada, evaluacion, cliente = resultado
+
+    # HU14: Buscar la rúbrica activa para este cliente y días de mora
+    dias_mora = llamada.metadatos_json.get("dias_mora", 0) or 0
+    rubrica_activa = db.exec(
+        select(Rubrica)
+        .where(
+            Rubrica.empresa == cliente.nombre_empresa,
+            Rubrica.activo == True,
+            Rubrica.mora_min <= dias_mora,
+            Rubrica.mora_max >= dias_mora,
+        )
+    ).first()
+
+    # Construir mapa nombre_criterio → {descripcion, peso, es_severidad}
+    criterios_info = {}
+    if rubrica_activa:
+        criterios_bd = db.exec(
+            select(Criterio).where(Criterio.rubrica_id == rubrica_activa.id)
+        ).all()
+        for c in criterios_bd:
+            criterios_info[c.nombre] = {
+                "descripcion": c.descripcion,
+                "peso": c.peso,
+                "es_severidad": c.es_severidad,
+            }
+
+    # HU14: Armar feedback enriquecido por criterio
+    detalles = evaluacion.detalles_json or {}
+    CAMPOS_META = {"Resumen", "Estatus_detectado", "Estatus_coherente"}
+    feedback_criterios = []
+    for nombre, resultado_ia in detalles.items():
+        if nombre in CAMPOS_META:
+            continue
+        paso = resultado_ia in (1, True, "1", "true")
+        info = criterios_info.get(nombre, {})
+        feedback_criterios.append({
+            "criterio": nombre,
+            "resultado": paso,
+            "descripcion": info.get("descripcion", "Sin descripcion disponible"),
+            "peso": info.get("peso", 1),
+            "es_severidad": info.get("es_severidad", False),
+        })
+
     return {
         "id_auditoria": evaluacion.id,
         "cliente": cliente.nombre_empresa,
         "fecha_llamada": llamada.metadatos_json.get("fecha_llamada"),
         "datos_colly": {
             "estatus_original": llamada.metadatos_json.get("estatus_colly"),
-            "dias_mora": llamada.metadatos_json.get("dias_mora"),
+            "dias_mora": dias_mora,
             "deuda_total": llamada.metadatos_json.get("balances", {}).get("total")
         },
         "resultados_ia": {
             "estatus_detectado": evaluacion.estado_auditoria,
             "puntaje_total": evaluacion.puntaje_logrado,
             "error_critico": evaluacion.error_critico,
-            "resumen_analisis": evaluacion.resumen_auditoria
+            "resumen_analisis": evaluacion.resumen_auditoria,
+            "estado_validacion": evaluacion.estado_validacion,
         },
-        "rubrica_detallada": evaluacion.detalles_json,
+        # HU14: feedback enriquecido con descripcion por criterio
+        "feedback_criterios": feedback_criterios,
+        # Mantener compatibilidad con frontend anterior
+        "rubrica_detallada": detalles,
         "transcripcion_completa": llamada.transcripcion
     }
 
@@ -227,16 +292,24 @@ def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_sessio
 # HU17 - DASHBOARD DE KPIs (incluye porcentaje de cobertura SLA)
 # =============================================================================
 @app.get("/api/v1/dashboard", summary="HU17: Metricas globales para graficos")
-def obtener_kpis_dashboard(db: Session = Depends(get_session)):
-    total_llamadas = db.exec(select(func.count(Llamada.id))).first() or 0
-    total_evaluaciones = db.exec(select(func.count(Evaluacion.id))).first() or 0
-    promedio_puntaje = db.exec(select(func.avg(Evaluacion.puntaje_logrado))).first() or 0.0
-    statement_estatus = (
+def obtener_kpis_dashboard(db: Session = Depends(get_session), current_user: Usuario = Depends(get_current_user)):
+    # HU02: Si el rol es cliente o kam, filtrar por su cliente_id
+    roles_filtrados = (RolUsuario.cliente, RolUsuario.kam)
+    filtro_tenant = (
+        Llamada.cliente_id == current_user.cliente_id
+        if current_user.rol in roles_filtrados and current_user.cliente_id
+        else True
+    )
+    total_llamadas     = db.exec(select(func.count(Llamada.id)).where(filtro_tenant)).first() or 0
+    ids_llamadas_tenant = select(Llamada.id).where(filtro_tenant)
+    total_evaluaciones = db.exec(select(func.count(Evaluacion.id)).where(Evaluacion.llamada_id.in_(ids_llamadas_tenant))).first() or 0
+    promedio_puntaje   = db.exec(select(func.avg(Evaluacion.puntaje_logrado)).where(Evaluacion.llamada_id.in_(ids_llamadas_tenant))).first() or 0.0
+    statement_estatus  = (
         select(Evaluacion.estado_auditoria, func.count(Evaluacion.id))
+        .where(Evaluacion.llamada_id.in_(ids_llamadas_tenant))
         .group_by(Evaluacion.estado_auditoria)
     )
-    distribucion_bd = db.exec(statement_estatus).all()
-    distribucion_dict = {estatus: cantidad for estatus, cantidad in distribucion_bd}
+    distribucion_dict  = {e: n for e, n in db.exec(statement_estatus).all()}
     cobertura_pct = round((total_evaluaciones / total_llamadas * 100), 1) if total_llamadas > 0 else 0.0
     return {
         "kpis_globales": {
@@ -272,13 +345,19 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # HU07 - LISTADO HISTORICO
 # =============================================================================
 @app.get("/api/v1/llamadas", summary="HU07: Listado historico de llamadas")
-def listar_llamadas(db: Session = Depends(get_session)):
-    statement = (
+def listar_llamadas(db: Session = Depends(get_session), current_user: Usuario = Depends(get_current_user)):
+    # HU02: Multi-tenant — clientes y KAM solo ven sus llamadas
+    roles_filtrados = (RolUsuario.cliente, RolUsuario.kam)
+    base_query = (
         select(Llamada, Evaluacion, Cliente)
         .join(Cliente, Llamada.cliente_id == Cliente.id)
         .join(Evaluacion, Llamada.id == Evaluacion.llamada_id, isouter=True)
         .order_by(Llamada.id.desc())
     )
+    if current_user.rol in roles_filtrados and current_user.cliente_id:
+        statement = base_query.where(Llamada.cliente_id == current_user.cliente_id)
+    else:
+        statement = base_query
     resultados_bd = db.exec(statement).all()
     lista_historial = []
     for llamada, evaluacion, cliente in resultados_bd:
@@ -369,3 +448,134 @@ def actualizar_prompt(datos: PromptUpdate, db: Session = Depends(get_session)):
         db.add(ConfiguracionSistema(clave="PROMPT_BASE", valor=datos.texto))
     db.commit()
     return {"mensaje": "Prompt actualizado con exito"}
+
+# =============================================================================
+# HU01 - AUTENTICACION JWT
+# =============================================================================
+@app.post("/api/v1/auth/login", summary="HU01: Login y obtencion de token JWT")
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_session),
+):
+    user = db.exec(select(Usuario).where(Usuario.email == form_data.username)).first()
+    if not user or not verify_password(form_data.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email o contrasena incorrectos",
+        )
+    if not user.activo:
+        raise HTTPException(status_code=403, detail="Usuario desactivado")
+
+    token = create_access_token({
+        "sub": str(user.id),
+        "rol": user.rol,
+        "cliente_id": user.cliente_id,
+        "nombre": user.nombre,
+    })
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "rol": user.rol,
+        "nombre": user.nombre,
+        "cliente_id": user.cliente_id,
+    }
+
+
+@app.get("/api/v1/auth/me", summary="HU01: Datos del usuario autenticado")
+def me(current_user: Usuario = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "nombre": current_user.nombre,
+        "rol": current_user.rol,
+        "cliente_id": current_user.cliente_id,
+    }
+
+
+# =============================================================================
+# HU03 - GESTION DE USUARIOS (solo Admin)
+# =============================================================================
+@app.post("/api/v1/usuarios", summary="HU03: Crear usuario (admin)")
+def crear_usuario(
+    datos: UsuarioCreate,
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_admin),
+):
+    if db.exec(select(Usuario).where(Usuario.email == datos.email)).first():
+        raise HTTPException(status_code=400, detail="El email ya esta registrado")
+    nuevo = Usuario(
+        email=datos.email,
+        password_hash=hash_password(datos.password),
+        nombre=datos.nombre,
+        rol=datos.rol,
+        cliente_id=datos.cliente_id,
+    )
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return {"mensaje": "Usuario creado", "id": nuevo.id, "email": nuevo.email, "rol": nuevo.rol}
+
+
+@app.get("/api/v1/usuarios", summary="HU03: Listar usuarios (admin)")
+def listar_usuarios(
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_admin),
+):
+    usuarios = db.exec(select(Usuario)).all()
+    return [
+        {"id": u.id, "email": u.email, "nombre": u.nombre, "rol": u.rol,
+         "cliente_id": u.cliente_id, "activo": u.activo}
+        for u in usuarios
+    ]
+
+
+@app.put("/api/v1/usuarios/{usuario_id}", summary="HU03: Actualizar usuario (admin)")
+def actualizar_usuario(
+    usuario_id: int,
+    datos: UsuarioUpdate,
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_admin),
+):
+    user = db.exec(select(Usuario).where(Usuario.id == usuario_id)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    if datos.nombre    is not None: user.nombre    = datos.nombre
+    if datos.rol       is not None: user.rol       = datos.rol
+    if datos.cliente_id is not None: user.cliente_id = datos.cliente_id
+    if datos.activo    is not None: user.activo    = datos.activo
+    db.add(user)
+    db.commit()
+    return {"mensaje": "Usuario actualizado", "id": user.id}
+
+
+@app.delete("/api/v1/usuarios/{usuario_id}", summary="HU03: Desactivar usuario (admin)")
+def desactivar_usuario(
+    usuario_id: int,
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_admin),
+):
+    user = db.exec(select(Usuario).where(Usuario.id == usuario_id)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    user.activo = False
+    db.add(user)
+    db.commit()
+    return {"mensaje": "Usuario desactivado", "id": user.id}
+
+
+# =============================================================================
+# HU01 - SEED: Crear admin inicial si no existe (util para primer arranque)
+# =============================================================================
+@app.post("/api/v1/auth/seed-admin", summary="HU01: Crear admin inicial (solo si no hay usuarios)")
+def seed_admin(db: Session = Depends(get_session)):
+    if db.exec(select(Usuario)).first():
+        raise HTTPException(status_code=400, detail="Ya existen usuarios en el sistema")
+    admin = Usuario(
+        email="admin@colektia.com",
+        password_hash=hash_password("Admin1234!"),
+        nombre="Administrador",
+        rol=RolUsuario.admin,
+    )
+    db.add(admin)
+    db.commit()
+    return {"mensaje": "Admin creado", "email": "admin@colektia.com", "password": "Admin1234!"}
