@@ -25,3 +25,7 @@ api_seguridad.log
 .gitignore  
 *.xlsx
 *.pdf
+*.png
+*.docx
+*.logs
+
