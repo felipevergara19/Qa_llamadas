@@ -672,3 +672,4 @@ def seed_admin(db: Session = Depends(get_session)):
     return {"mensaje": "Admin creado", "email": "admin@colektia.com", "password": "Admin1234!"}
 
 # Prueba de Pr Agent
+# Prueba de Pr Agent
