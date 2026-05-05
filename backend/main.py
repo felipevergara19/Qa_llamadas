@@ -670,3 +670,5 @@ def seed_admin(db: Session = Depends(get_session)):
     db.add(admin)
     db.commit()
     return {"mensaje": "Admin creado", "email": "admin@colektia.com", "password": "Admin1234!"}
+
+# Prueba de Pr Agent
