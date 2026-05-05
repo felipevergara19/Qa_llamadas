@@ -468,6 +468,18 @@ def listar_llamadas(db: Session = Depends(get_session), current_user: Usuario = 
     return {"total_registros": len(lista_historial), "data": lista_historial}
 
 # =============================================================================
+# HU03 - LISTAR EMPRESAS (para dropdown en panel de usuarios)
+# =============================================================================
+@app.get("/api/v1/clientes", summary="HU03: Listar empresas clientes (admin)")
+def listar_clientes(
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_admin),
+):
+    clientes = db.exec(select(Cliente)).all()
+    return [{"id": c.id, "nombre_empresa": c.nombre_empresa} for c in clientes]
+
+
+# =============================================================================
 # HU09 / HU29 - RUBRICAS
 # =============================================================================
 @app.post("/api/v1/rubricas", summary="HU09: Crear rubrica con criterios")

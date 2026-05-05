@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Settings, LogOut, UserCircle } from 'lucide-react';
+import { LayoutDashboard, Settings, LogOut, UserCircle, Users } from 'lucide-react';
 
-import Dashboard   from './views/Dashboard';
-import CallDetail  from './views/CallDetail';
+import Dashboard    from './views/Dashboard';
+import CallDetail   from './views/CallDetail';
 import SettingsView from './views/Settings';
-import Login       from './views/Login';
+import UsersView    from './views/Users';
+import Login        from './views/Login';
 
 // HU01: Guard — redirige a /login si no hay token
 function PrivateRoute({ children }) {
@@ -47,13 +48,28 @@ function AppLayout() {
             <LayoutDashboard className="w-5 h-5 mr-3" />
             Auditorias
           </Link>
-          <Link
-            to="/settings"
-            className={`flex items-center px-4 py-3 rounded-lg transition-colors ${location.pathname === '/settings' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            <Settings className="w-5 h-5 mr-3" />
-            Configuracion
-          </Link>
+
+          {/* HU03: Solo Admin ve el panel de usuarios */}
+          {user?.rol === 'admin' && (
+            <Link
+              to="/usuarios"
+              className={`flex items-center px-4 py-3 rounded-lg transition-colors ${location.pathname === '/usuarios' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              <Users className="w-5 h-5 mr-3" />
+              Usuarios
+            </Link>
+          )}
+
+          {/* Configuracion: solo Admin y Analista QA */}
+          {['admin', 'analista_qa'].includes(user?.rol) && (
+            <Link
+              to="/settings"
+              className={`flex items-center px-4 py-3 rounded-lg transition-colors ${location.pathname === '/settings' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              <Settings className="w-5 h-5 mr-3" />
+              Configuracion
+            </Link>
+          )}
         </nav>
 
         {/* HU01: Info usuario + logout */}
@@ -82,9 +98,10 @@ function AppLayout() {
       {/* Main */}
       <main className="flex-1 overflow-y-auto">
         <Routes>
-          <Route path="/"           element={<Dashboard />} />
+          <Route path="/"            element={<Dashboard />} />
           <Route path="/llamada/:id" element={<CallDetail />} />
-          <Route path="/settings"   element={<SettingsView />} />
+          <Route path="/settings"    element={<SettingsView />} />
+          <Route path="/usuarios"    element={<UsersView />} />
         </Routes>
       </main>
     </div>
