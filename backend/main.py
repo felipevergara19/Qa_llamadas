@@ -570,6 +570,7 @@ def login(
     }
 
 
+
 @app.get("/api/v1/auth/me", summary="HU01: Datos del usuario autenticado")
 def me(current_user: Usuario = Depends(get_current_user)):
     return {
@@ -578,6 +579,7 @@ def me(current_user: Usuario = Depends(get_current_user)):
         "nombre": current_user.nombre,
         "rol": current_user.rol,
         "cliente_id": current_user.cliente_id,
+        "activo": current_user.activo,
     }
 
 
@@ -628,10 +630,10 @@ def actualizar_usuario(
     user = db.exec(select(Usuario).where(Usuario.id == usuario_id)).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    if datos.nombre    is not None: user.nombre    = datos.nombre
-    if datos.rol       is not None: user.rol       = datos.rol
+    if datos.nombre     is not None: user.nombre     = datos.nombre
+    if datos.rol        is not None: user.rol        = datos.rol
     if datos.cliente_id is not None: user.cliente_id = datos.cliente_id
-    if datos.activo    is not None: user.activo    = datos.activo
+    if datos.activo     is not None: user.activo     = datos.activo
     db.add(user)
     db.commit()
     return {"mensaje": "Usuario actualizado", "id": user.id}
@@ -653,9 +655,9 @@ def desactivar_usuario(
 
 
 # =============================================================================
-# HU01 - SEED: Crear admin inicial si no existe (util para primer arranque)
+# HU01 - SEED: Crear admin inicial si no existe
 # =============================================================================
-@app.post("/api/v1/auth/seed-admin", summary="HU01: Crear admin inicial (solo si no hay usuarios)")
+@app.post("/api/v1/auth/seed-admin", summary="HU01: Crear admin inicial")
 def seed_admin(db: Session = Depends(get_session)):
     if db.exec(select(Usuario)).first():
         raise HTTPException(status_code=400, detail="Ya existen usuarios en el sistema")
