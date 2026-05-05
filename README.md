@@ -128,3 +128,5 @@ App available at `http://localhost:5173`
 
 Academic project — Universidad Andrés Bello (UNAB), Santiago, Chile.
 Not licensed for commercial use.
+
+# Prueba de PR-Agent
