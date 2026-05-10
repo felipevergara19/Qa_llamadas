@@ -366,9 +366,10 @@ def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_sessio
             "estatus_detectado": evaluacion.estado_auditoria,
             "puntaje_total": evaluacion.puntaje_logrado,
             "error_critico": evaluacion.error_critico,
-            "errores_criticos": errores_criticos,       # <-- nuevo: lista de criterios que fallaron
+            "errores_criticos": errores_criticos,
             "resumen_analisis": evaluacion.resumen_auditoria,
             "estado_validacion": evaluacion.estado_validacion,
+            "comentario_auditor": evaluacion.comentario_auditor,
         },
         # HU14: feedback enriquecido con descripcion por criterio
         "feedback_criterios": feedback_criterios,
@@ -650,6 +651,51 @@ def desactivar_usuario(
     db.add(user)
     db.commit()
     return {"mensaje": "Usuario desactivado", "id": user.id}
+
+
+# =============================================================================
+# HU22 - APELACIÓN DE NOTA (HITL: Human-in-the-Loop)
+# Permite al analista QA o admin aprobar/rechazar la evaluación de la IA.
+# =============================================================================
+class ValidacionUpdate(BaseModel):
+    estado: str               # "aprobada" | "rechazada" | "pendiente"
+    comentario: Optional[str] = None  # Justificación del analista
+
+@app.put(
+    "/api/v1/evaluaciones/{llamada_id}/validacion",
+    summary="HU22: Aprobar o rechazar la evaluación de la IA (analista_qa / admin)",
+)
+def actualizar_validacion(
+    llamada_id: int,
+    datos: ValidacionUpdate,
+    db: Session = Depends(get_session),
+    current_user: Usuario = Depends(require_qa_or_admin),
+):
+    if datos.estado not in ("aprobada", "rechazada", "pendiente"):
+        raise HTTPException(status_code=400, detail="Estado inválido. Use: aprobada, rechazada o pendiente.")
+
+    evaluacion = db.exec(
+        select(Evaluacion).where(Evaluacion.llamada_id == llamada_id)
+    ).first()
+    if not evaluacion:
+        raise HTTPException(status_code=404, detail=f"No existe evaluación para la llamada #{llamada_id}")
+
+    evaluacion.estado_validacion  = datos.estado
+    evaluacion.comentario_auditor = datos.comentario or None
+    evaluacion.validado_por_id    = current_user.id
+    db.add(evaluacion)
+    db.commit()
+    logger.info(
+        f"[HU22] Llamada #{llamada_id} → '{datos.estado}' por {current_user.email} | "
+        f"comentario: {datos.comentario or '—'}"
+    )
+    return {
+        "mensaje": f"Evaluación marcada como '{datos.estado}'",
+        "llamada_id": llamada_id,
+        "estado_validacion": datos.estado,
+        "comentario_auditor": datos.comentario,
+        "validado_por": current_user.email,
+    }
 
 
 # =============================================================================

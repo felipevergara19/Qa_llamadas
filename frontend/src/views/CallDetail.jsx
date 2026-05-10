@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
-import { ArrowLeft, User, Headphones, CheckCircle2, AlertCircle, Info, RefreshCw } from 'lucide-react';
+import { ArrowLeft, User, Headphones, CheckCircle2, AlertCircle, Info, RefreshCw, ThumbsUp, ThumbsDown, RotateCcw } from 'lucide-react';
 
 export default function CallDetail() {
   const { id } = useParams();
@@ -9,6 +9,14 @@ export default function CallDetail() {
   const [loading, setLoading] = useState(true);
   const [reauditando, setReauditando] = useState(false);
   const [reauditoriaMsg, setReauditoriaMsg] = useState(null); // { ok, texto }
+  const [validando, setValidando] = useState(false);
+  const [validacionMsg, setValidacionMsg] = useState(null); // { ok, texto }
+  const [comentario, setComentario] = useState('');
+  const [mostrarFormValidacion, setMostrarFormValidacion] = useState(false);
+
+  const userRaw = localStorage.getItem('qa_user');
+  const currentUser = userRaw ? JSON.parse(userRaw) : null;
+  const puedeValidar = ['admin', 'analista_qa'].includes(currentUser?.rol);
 
   const fetchData = () => {
     setLoading(true);
@@ -19,6 +27,27 @@ export default function CallDetail() {
   };
 
   useEffect(() => { fetchData(); }, [id]);
+
+  const handleValidar = async (estado) => {
+    if (!comentario.trim()) {
+      setValidacionMsg({ ok: false, texto: 'Debes escribir una justificación antes de validar.' });
+      return;
+    }
+    setValidando(true);
+    setValidacionMsg(null);
+    try {
+      await api.put(`/api/v1/evaluaciones/${id}/validacion`, { estado, comentario: comentario.trim() });
+      setValidacionMsg({ ok: true, texto: `Evaluación "${estado}" registrada correctamente.` });
+      setComentario('');
+      setMostrarFormValidacion(false);
+      fetchData();
+    } catch (e) {
+      const msg = e.response?.data?.detail || 'Error al actualizar la validación';
+      setValidacionMsg({ ok: false, texto: msg });
+    } finally {
+      setValidando(false);
+    }
+  };
 
   const handleReauditar = async () => {
     if (!window.confirm('¿Re-auditar esta llamada con IA? La evaluación actual se reemplazará.')) return;
@@ -85,6 +114,87 @@ export default function CallDetail() {
           <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${badgeValidacion}`}>
             Validacion: {estadoValidacion}
           </span>
+
+          {/* HU22: Apelación de nota — Validación humana (HITL) */}
+          {puedeValidar && (
+            <div className="mt-4 border border-gray-200 rounded-xl overflow-hidden">
+              <div className="bg-gray-50 px-4 py-2 flex items-center justify-between">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Validación humana (HITL)
+                </p>
+                {estadoValidacion !== 'pendiente' && (
+                  <button
+                    onClick={() => { setMostrarFormValidacion(true); setValidacionMsg(null); }}
+                    title="Editar validación"
+                    className="text-xs text-gray-400 hover:text-blue-500 flex items-center gap-1"
+                  >
+                    <RotateCcw className="w-3 h-3" /> Cambiar
+                  </button>
+                )}
+              </div>
+
+              {/* Estado actual ya validado */}
+              {estadoValidacion !== 'pendiente' && !mostrarFormValidacion ? (
+                <div className={`p-4 ${estadoValidacion === 'aprobada' ? 'bg-green-50' : 'bg-red-50'}`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    {estadoValidacion === 'aprobada'
+                      ? <ThumbsUp className="w-4 h-4 text-green-600" />
+                      : <ThumbsDown className="w-4 h-4 text-red-600" />
+                    }
+                    <span className={`text-sm font-bold ${estadoValidacion === 'aprobada' ? 'text-green-800' : 'text-red-800'}`}>
+                      Evaluación {estadoValidacion === 'aprobada' ? 'Aprobada' : 'Rechazada'}
+                    </span>
+                  </div>
+                  {data.resultados_ia.comentario_auditor && (
+                    <p className="text-xs text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-2 italic leading-relaxed">
+                      "{data.resultados_ia.comentario_auditor}"
+                    </p>
+                  )}
+                </div>
+              ) : (
+                /* Formulario de validación */
+                <div className="p-4 space-y-3">
+                  <p className="text-xs text-gray-500">
+                    Revisa la transcripción y los criterios, luego escribe tu justificación y valida.
+                  </p>
+                  <textarea
+                    value={comentario}
+                    onChange={(e) => setComentario(e.target.value)}
+                    rows={3}
+                    placeholder="Ej: Se verificó manualmente que el agente sí realizó el saludo correcto aunque la IA lo marcó como fallo..."
+                    className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleValidar('aprobada')}
+                      disabled={validando}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      <ThumbsUp className="w-4 h-4" />
+                      Aprobar
+                    </button>
+                    <button
+                      onClick={() => handleValidar('rechazada')}
+                      disabled={validando}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      <ThumbsDown className="w-4 h-4" />
+                      Rechazar
+                    </button>
+                  </div>
+                  {validacionMsg && (
+                    <div className={`text-xs px-3 py-2 rounded-lg font-medium ${
+                      validacionMsg.ok
+                        ? 'bg-green-50 text-green-700 border border-green-200'
+                        : 'bg-red-50 text-red-700 border border-red-200'
+                    }`}>
+                      {validacionMsg.ok ? '✓ ' : '✗ '}{validacionMsg.texto}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* HU27: Botón re-auditoría individual */}
           <div className="mt-4">

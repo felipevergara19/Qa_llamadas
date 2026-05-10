@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
-import { Search, AlertCircle, CheckCircle2, BarChart2, Phone, ShieldCheck, Star } from 'lucide-react';
+import { Search, AlertCircle, CheckCircle2, BarChart2, Phone, ShieldCheck, Star, X } from 'lucide-react';
 
 export default function Dashboard() {
   const [llamadas, setLlamadas]   = useState([]);
@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [loading, setLoading]     = useState(true);
   const [searchTerm, setSearchTerm]       = useState('');
   const [filterEmpresa, setFilterEmpresa] = useState('');
+  const [alertaDismissed, setAlertaDismissed] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -44,12 +45,38 @@ export default function Dashboard() {
   };
 
   const uniqueEmpresas = [...new Set(llamadas.map(l => l.empresa))];
+  const llamadasCriticas = llamadas.filter(l => l.resultados_ia.error_critico);
 
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-slate-800">Panel de Auditorias</h1>
       </div>
+
+      {/* HU25: Banner de alerta crítica global */}
+      {!alertaDismissed && llamadasCriticas.length > 0 && (
+        <div className="mb-6 flex items-start gap-3 bg-red-50 border border-red-300 text-red-800 rounded-xl px-4 py-3 shadow-sm">
+          <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0 text-red-600" />
+          <div className="flex-1">
+            <p className="font-semibold text-sm">
+              {llamadasCriticas.length} llamada{llamadasCriticas.length > 1 ? 's' : ''} con error crítico detectado
+            </p>
+            <p className="text-xs text-red-600 mt-0.5">
+              {llamadasCriticas.length > 1
+                ? `IDs: ${llamadasCriticas.map(l => '#' + l.id_llamada).join(', ')} — Revisar criterios de severidad.`
+                : `Llamada #${llamadasCriticas[0].id_llamada} (${llamadasCriticas[0].empresa}) — Revisar criterios de severidad.`
+              }
+            </p>
+          </div>
+          <button
+            onClick={() => setAlertaDismissed(true)}
+            className="text-red-400 hover:text-red-600 transition-colors flex-shrink-0"
+            title="Cerrar alerta"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {kpis && (
         <>
