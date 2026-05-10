@@ -683,16 +683,25 @@ def actualizar_validacion(
     evaluacion.estado_validacion  = datos.estado
     evaluacion.comentario_auditor = datos.comentario or None
     evaluacion.validado_por_id    = current_user.id
+
+    # Si el analista aprueba la llamada, limpia el error crítico (la IA se equivocó).
+    # Si la rechaza, confirma que sí es crítica.
+    if datos.estado == "aprobada":
+        evaluacion.error_critico = False
+    elif datos.estado == "rechazada":
+        evaluacion.error_critico = True
+
     db.add(evaluacion)
     db.commit()
     logger.info(
         f"[HU22] Llamada #{llamada_id} → '{datos.estado}' por {current_user.email} | "
-        f"comentario: {datos.comentario or '—'}"
+        f"error_critico ahora: {evaluacion.error_critico} | comentario: {datos.comentario or '—'}"
     )
     return {
         "mensaje": f"Evaluación marcada como '{datos.estado}'",
         "llamada_id": llamada_id,
         "estado_validacion": datos.estado,
+        "error_critico": evaluacion.error_critico,
         "comentario_auditor": datos.comentario,
         "validado_por": current_user.email,
     }

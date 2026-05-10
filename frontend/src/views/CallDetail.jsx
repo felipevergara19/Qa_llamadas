@@ -229,6 +229,12 @@ export default function CallDetail() {
               <div className={`text-sm font-bold mt-1 ${data.resultados_ia.error_critico ? 'text-red-900' : 'text-green-900'}`}>
                 {data.resultados_ia.error_critico ? 'Error Crítico' : 'Sin errores'}
               </div>
+              {/* Indicador de anulación humana */}
+              {!data.resultados_ia.error_critico && estadoValidacion === 'aprobada' && (
+                <div className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> Anulado por analista
+                </div>
+              )}
             </div>
           </div>
 

@@ -29111,3 +29111,1058 @@ FROM criterio
 WHERE criterio.rubrica_id = %(rubrica_id_1)s
 2026-05-09 23:09:35,595 - INFO - [cached since 77.16s ago] {'rubrica_id_1': 2}
 2026-05-09 23:09:35,596 - INFO - ROLLBACK
+2026-05-09 23:11:07,826 - INFO - BEGIN (implicit)
+2026-05-09 23:11:07,826 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:11:07,826 - INFO - [cached since 169.4s ago] {'id_3': 8}
+2026-05-09 23:11:07,828 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:11:07,828 - INFO - [cached since 169.4s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 95, 'mora_max_1': 95}
+2026-05-09 23:11:07,830 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:11:07,830 - INFO - [cached since 169.4s ago] {'rubrica_id_1': 2}
+2026-05-09 23:11:07,831 - INFO - ROLLBACK
+2026-05-09 23:11:07,833 - INFO - BEGIN (implicit)
+2026-05-09 23:11:07,833 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:11:07,834 - INFO - [cached since 169.4s ago] {'id_3': 8}
+2026-05-09 23:11:07,835 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:11:07,835 - INFO - [cached since 169.4s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 95, 'mora_max_1': 95}
+2026-05-09 23:11:07,835 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:11:07,835 - INFO - [cached since 169.4s ago] {'rubrica_id_1': 2}
+2026-05-09 23:11:07,837 - INFO - ROLLBACK
+2026-05-09 23:11:10,470 - INFO - BEGIN (implicit)
+2026-05-09 23:11:10,470 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:10,470 - INFO - BEGIN (implicit)
+2026-05-09 23:11:10,471 - INFO - [cached since 174s ago] {'id_1': 5}
+2026-05-09 23:11:10,471 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:10,471 - INFO - [cached since 174s ago] {'id_1': 5}
+2026-05-09 23:11:10,471 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:11:10,473 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:11:10,473 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,473 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,474 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:10,475 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,475 - INFO - ROLLBACK
+2026-05-09 23:11:10,476 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:10,476 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,477 - INFO - BEGIN (implicit)
+2026-05-09 23:11:10,477 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:11:10,477 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:10,477 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,477 - INFO - [cached since 174s ago] {'id_1': 5}
+2026-05-09 23:11:10,479 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:11:10,479 - INFO - ROLLBACK
+2026-05-09 23:11:10,480 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,480 - INFO - BEGIN (implicit)
+2026-05-09 23:11:10,481 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:10,481 - INFO - [cached since 174s ago] {'id_1': 5}
+2026-05-09 23:11:10,482 - INFO - ROLLBACK
+2026-05-09 23:11:10,483 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:11:10,483 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,483 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:10,483 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,484 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:10,484 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,485 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:11:10,485 - INFO - [cached since 174s ago] {}
+2026-05-09 23:11:10,486 - INFO - ROLLBACK
+2026-05-09 23:11:11,633 - INFO - BEGIN (implicit)
+2026-05-09 23:11:11,634 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:11:11,634 - INFO - [cached since 173.2s ago] {'id_3': 7}
+2026-05-09 23:11:11,635 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:11:11,636 - INFO - [cached since 173.2s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:11:11,636 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:11:11,636 - INFO - [cached since 173.2s ago] {'rubrica_id_1': 2}
+2026-05-09 23:11:11,638 - INFO - ROLLBACK
+2026-05-09 23:11:11,639 - INFO - BEGIN (implicit)
+2026-05-09 23:11:11,639 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:11:11,639 - INFO - [cached since 173.2s ago] {'id_3': 7}
+2026-05-09 23:11:11,640 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:11:11,641 - INFO - [cached since 173.2s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:11:11,641 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:11:11,641 - INFO - [cached since 173.2s ago] {'rubrica_id_1': 2}
+2026-05-09 23:11:11,643 - INFO - ROLLBACK
+2026-05-09 23:11:17,039 - INFO - BEGIN (implicit)
+2026-05-09 23:11:17,040 - INFO - BEGIN (implicit)
+2026-05-09 23:11:17,040 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:17,040 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:17,040 - INFO - [cached since 180.6s ago] {'id_1': 5}
+2026-05-09 23:11:17,040 - INFO - [cached since 180.6s ago] {'id_1': 5}
+2026-05-09 23:11:17,041 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:11:17,042 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:11:17,042 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,042 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,042 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:17,043 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,044 - INFO - ROLLBACK
+2026-05-09 23:11:17,044 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:17,044 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,045 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:11:17,045 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,046 - INFO - ROLLBACK
+2026-05-09 23:11:17,046 - INFO - BEGIN (implicit)
+2026-05-09 23:11:17,047 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:17,047 - INFO - [cached since 180.6s ago] {'id_1': 5}
+2026-05-09 23:11:17,048 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:11:17,049 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,049 - INFO - BEGIN (implicit)
+2026-05-09 23:11:17,049 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:17,050 - INFO - [cached since 180.6s ago] {'id_1': 5}
+2026-05-09 23:11:17,051 - INFO - ROLLBACK
+2026-05-09 23:11:17,051 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:11:17,051 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,052 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:17,052 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,053 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:17,053 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,054 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:11:17,054 - INFO - [cached since 180.6s ago] {}
+2026-05-09 23:11:17,054 - INFO - ROLLBACK
+2026-05-09 23:11:17,961 - INFO - BEGIN (implicit)
+2026-05-09 23:11:17,962 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:11:17,962 - INFO - [cached since 179.5s ago] {'id_3': 6}
+2026-05-09 23:11:17,964 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:11:17,964 - INFO - [cached since 179.5s ago] {'empresa_1': 'Sistecredito', 'mora_min_1': 41, 'mora_max_1': 41}
+2026-05-09 23:11:17,964 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:11:17,965 - INFO - [cached since 179.5s ago] {'rubrica_id_1': 5}
+2026-05-09 23:11:17,966 - INFO - ROLLBACK
+2026-05-09 23:11:17,967 - INFO - BEGIN (implicit)
+2026-05-09 23:11:17,967 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:11:17,967 - INFO - [cached since 179.5s ago] {'id_3': 6}
+2026-05-09 23:11:17,968 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:11:17,968 - INFO - [cached since 179.5s ago] {'empresa_1': 'Sistecredito', 'mora_min_1': 41, 'mora_max_1': 41}
+2026-05-09 23:11:17,969 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:11:17,969 - INFO - [cached since 179.5s ago] {'rubrica_id_1': 5}
+2026-05-09 23:11:17,970 - INFO - ROLLBACK
+2026-05-09 23:11:18,962 - INFO - BEGIN (implicit)
+2026-05-09 23:11:18,963 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:18,963 - INFO - BEGIN (implicit)
+2026-05-09 23:11:18,963 - INFO - [cached since 182.5s ago] {'id_1': 5}
+2026-05-09 23:11:18,963 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:18,964 - INFO - [cached since 182.5s ago] {'id_1': 5}
+2026-05-09 23:11:18,964 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:11:18,965 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:11:18,965 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,965 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,966 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:18,967 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,967 - INFO - ROLLBACK
+2026-05-09 23:11:18,968 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:18,969 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,969 - INFO - BEGIN (implicit)
+2026-05-09 23:11:18,969 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:18,970 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:11:18,970 - INFO - [cached since 182.5s ago] {'id_1': 5}
+2026-05-09 23:11:18,970 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,972 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:11:18,972 - INFO - ROLLBACK
+2026-05-09 23:11:18,973 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,973 - INFO - BEGIN (implicit)
+2026-05-09 23:11:18,974 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:11:18,974 - INFO - [cached since 182.5s ago] {'id_1': 5}
+2026-05-09 23:11:18,975 - INFO - ROLLBACK
+2026-05-09 23:11:18,975 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:11:18,975 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,976 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:18,976 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,976 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:11:18,976 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,978 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:11:18,978 - INFO - [cached since 182.5s ago] {}
+2026-05-09 23:11:18,979 - INFO - ROLLBACK
+2026-05-09 23:11:20,069 - INFO - BEGIN (implicit)
+2026-05-09 23:11:20,069 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:11:20,069 - INFO - [cached since 181.6s ago] {'id_3': 7}
+2026-05-09 23:11:20,070 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:11:20,070 - INFO - [cached since 181.6s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:11:20,071 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:11:20,072 - INFO - [cached since 181.6s ago] {'rubrica_id_1': 2}
+2026-05-09 23:11:20,073 - INFO - ROLLBACK
+2026-05-09 23:11:20,074 - INFO - BEGIN (implicit)
+2026-05-09 23:11:20,074 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:11:20,075 - INFO - [cached since 181.6s ago] {'id_3': 7}
+2026-05-09 23:11:20,076 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:11:20,076 - INFO - [cached since 181.6s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:11:20,077 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:11:20,077 - INFO - [cached since 181.6s ago] {'rubrica_id_1': 2}
+2026-05-09 23:11:20,078 - INFO - ROLLBACK
+2026-05-09 23:12:15,073 - INFO - Servidor apagado.
+2026-05-09 23:12:15,074 - INFO - Scheduler has been shut down
+2026-05-09 23:12:18,071 - INFO - select pg_catalog.version()
+2026-05-09 23:12:18,072 - INFO - [raw sql] {}
+2026-05-09 23:12:18,072 - INFO - select current_schema()
+2026-05-09 23:12:18,072 - INFO - [raw sql] {}
+2026-05-09 23:12:18,073 - INFO - show standard_conforming_strings
+2026-05-09 23:12:18,073 - INFO - [raw sql] {}
+2026-05-09 23:12:18,073 - INFO - BEGIN (implicit)
+2026-05-09 23:12:18,075 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,075 - INFO - [generated in 0.00028s] {'table_name': 'usuario', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,076 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,077 - INFO - [cached since 0.001769s ago] {'table_name': 'cliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,077 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,077 - INFO - [cached since 0.002499s ago] {'table_name': 'llamada', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,077 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,077 - INFO - [cached since 0.003108s ago] {'table_name': 'evaluacion', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,079 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,079 - INFO - [cached since 0.003724s ago] {'table_name': 'guioncliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,079 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,080 - INFO - [cached since 0.004249s ago] {'table_name': 'criterio', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,080 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,080 - INFO - [cached since 0.004737s ago] {'table_name': 'rubrica', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,080 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,080 - INFO - [cached since 0.005228s ago] {'table_name': 'configuracionsistema', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,081 - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:12:18,081 - INFO - [generated in 0.00018s] {'typname_1': 'rolusuario', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:12:18,082 - INFO - COMMIT
+2026-05-09 23:12:18,082 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-09 23:12:18,083 - INFO - Added job "procesar_llamadas_pendientes" to job store "default"
+2026-05-09 23:12:18,083 - INFO - Scheduler started
+2026-05-09 23:12:18,083 - INFO - Servidor en linea. Scheduler activo: auditoria cada 240 min.
+2026-05-09 23:12:28,628 - INFO - BEGIN (implicit)
+2026-05-09 23:12:28,636 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:12:28,637 - INFO - [generated in 0.00045s] {'id_3': 7}
+2026-05-09 23:12:28,641 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:12:28,641 - INFO - [generated in 0.00027s] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:12:28,643 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:12:28,643 - INFO - [generated in 0.00026s] {'rubrica_id_1': 2}
+2026-05-09 23:12:28,646 - INFO - ROLLBACK
+2026-05-09 23:12:28,650 - INFO - BEGIN (implicit)
+2026-05-09 23:12:28,651 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:12:28,651 - INFO - [cached since 0.01504s ago] {'id_3': 7}
+2026-05-09 23:12:28,652 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:12:28,653 - INFO - [cached since 0.01188s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:12:28,653 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:12:28,654 - INFO - [cached since 0.0105s ago] {'rubrica_id_1': 2}
+2026-05-09 23:12:28,655 - INFO - ROLLBACK
+2026-05-09 23:14:34,643 - INFO - BEGIN (implicit)
+2026-05-09 23:14:34,644 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:34,645 - INFO - [generated in 0.00024s] {'id_1': 5}
+2026-05-09 23:14:34,647 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:14:34,648 - INFO - [generated in 0.00031s] {}
+2026-05-09 23:14:34,650 - INFO - ROLLBACK
+2026-05-09 23:14:34,653 - INFO - BEGIN (implicit)
+2026-05-09 23:14:34,654 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:34,654 - INFO - [cached since 0.009214s ago] {'id_1': 5}
+2026-05-09 23:14:34,655 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:14:34,655 - INFO - [cached since 0.007505s ago] {}
+2026-05-09 23:14:34,656 - INFO - ROLLBACK
+2026-05-09 23:14:34,666 - INFO - BEGIN (implicit)
+2026-05-09 23:14:34,666 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:34,666 - INFO - [cached since 0.02193s ago] {'id_1': 5}
+2026-05-09 23:14:34,669 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:14:34,669 - INFO - [generated in 0.00022s] {}
+2026-05-09 23:14:34,670 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:34,671 - INFO - [generated in 0.00022s] {}
+2026-05-09 23:14:34,673 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:34,673 - INFO - [generated in 0.00023s] {}
+2026-05-09 23:14:34,674 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:14:34,674 - INFO - [generated in 0.00023s] {}
+2026-05-09 23:14:34,675 - INFO - ROLLBACK
+2026-05-09 23:14:34,676 - INFO - BEGIN (implicit)
+2026-05-09 23:14:34,677 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:34,677 - INFO - [cached since 0.03264s ago] {'id_1': 5}
+2026-05-09 23:14:34,678 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:14:34,678 - INFO - [cached since 0.009098s ago] {}
+2026-05-09 23:14:34,678 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:34,678 - INFO - [cached since 0.00819s ago] {}
+2026-05-09 23:14:34,680 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:34,680 - INFO - [cached since 0.006887s ago] {}
+2026-05-09 23:14:34,680 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:14:34,680 - INFO - [cached since 0.006444s ago] {}
+2026-05-09 23:14:34,681 - INFO - ROLLBACK
+2026-05-09 23:14:36,475 - INFO - BEGIN (implicit)
+2026-05-09 23:14:36,475 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:14:36,475 - INFO - [cached since 127.8s ago] {'id_3': 7}
+2026-05-09 23:14:36,478 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:14:36,478 - INFO - [cached since 127.8s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:14:36,480 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:14:36,480 - INFO - [cached since 127.8s ago] {'rubrica_id_1': 2}
+2026-05-09 23:14:36,482 - INFO - ROLLBACK
+2026-05-09 23:14:36,484 - INFO - BEGIN (implicit)
+2026-05-09 23:14:36,484 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:14:36,484 - INFO - [cached since 127.8s ago] {'id_3': 7}
+2026-05-09 23:14:36,486 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:14:36,486 - INFO - [cached since 127.8s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:14:36,487 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:14:36,487 - INFO - [cached since 127.8s ago] {'rubrica_id_1': 2}
+2026-05-09 23:14:36,489 - INFO - ROLLBACK
+2026-05-09 23:14:46,493 - INFO - Servidor apagado.
+2026-05-09 23:14:46,493 - INFO - Scheduler has been shut down
+2026-05-09 23:14:48,599 - INFO - select pg_catalog.version()
+2026-05-09 23:14:48,599 - INFO - [raw sql] {}
+2026-05-09 23:14:48,600 - INFO - select current_schema()
+2026-05-09 23:14:48,600 - INFO - [raw sql] {}
+2026-05-09 23:14:48,600 - INFO - show standard_conforming_strings
+2026-05-09 23:14:48,601 - INFO - [raw sql] {}
+2026-05-09 23:14:48,601 - INFO - BEGIN (implicit)
+2026-05-09 23:14:48,603 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,603 - INFO - [generated in 0.00022s] {'table_name': 'usuario', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,604 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,605 - INFO - [cached since 0.001948s ago] {'table_name': 'cliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,605 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,605 - INFO - [cached since 0.002658s ago] {'table_name': 'llamada', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,606 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,606 - INFO - [cached since 0.003208s ago] {'table_name': 'evaluacion', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,607 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,607 - INFO - [cached since 0.003742s ago] {'table_name': 'guioncliente', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,607 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,607 - INFO - [cached since 0.004259s ago] {'table_name': 'criterio', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,608 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,608 - INFO - [cached since 0.004732s ago] {'table_name': 'rubrica', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,608 - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,608 - INFO - [cached since 0.005246s ago] {'table_name': 'configuracionsistema', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,609 - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-05-09 23:14:48,609 - INFO - [generated in 0.00019s] {'typname_1': 'rolusuario', 'nspname_1': 'pg_catalog'}
+2026-05-09 23:14:48,609 - INFO - COMMIT
+2026-05-09 23:14:48,610 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-09 23:14:48,611 - INFO - Added job "procesar_llamadas_pendientes" to job store "default"
+2026-05-09 23:14:48,611 - INFO - Scheduler started
+2026-05-09 23:14:48,612 - INFO - Servidor en linea. Scheduler activo: auditoria cada 240 min.
+2026-05-09 23:14:50,862 - INFO - BEGIN (implicit)
+2026-05-09 23:14:50,866 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:50,866 - INFO - [generated in 0.00039s] {'id_1': 5}
+2026-05-09 23:14:50,870 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:14:50,871 - INFO - [generated in 0.00030s] {}
+2026-05-09 23:14:50,875 - INFO - ROLLBACK
+2026-05-09 23:14:50,877 - INFO - BEGIN (implicit)
+2026-05-09 23:14:50,878 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:50,878 - INFO - [cached since 0.01098s ago] {'id_1': 5}
+2026-05-09 23:14:50,879 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:14:50,879 - INFO - [cached since 0.008173s ago] {}
+2026-05-09 23:14:50,880 - INFO - ROLLBACK
+2026-05-09 23:14:50,891 - INFO - BEGIN (implicit)
+2026-05-09 23:14:50,891 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:50,891 - INFO - [cached since 0.02435s ago] {'id_1': 5}
+2026-05-09 23:14:50,893 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:14:50,893 - INFO - [generated in 0.00021s] {}
+2026-05-09 23:14:50,895 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:50,895 - INFO - [generated in 0.00023s] {}
+2026-05-09 23:14:50,896 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:50,896 - INFO - [generated in 0.00029s] {}
+2026-05-09 23:14:50,898 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:14:50,898 - INFO - [generated in 0.00023s] {}
+2026-05-09 23:14:50,899 - INFO - ROLLBACK
+2026-05-09 23:14:50,900 - INFO - BEGIN (implicit)
+2026-05-09 23:14:50,901 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:50,901 - INFO - [cached since 0.03416s ago] {'id_1': 5}
+2026-05-09 23:14:50,901 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:14:50,901 - INFO - [cached since 0.008607s ago] {}
+2026-05-09 23:14:50,902 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:50,903 - INFO - [cached since 0.007862s ago] {}
+2026-05-09 23:14:50,903 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:50,904 - INFO - [cached since 0.006996s ago] {}
+2026-05-09 23:14:50,904 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:14:50,904 - INFO - [cached since 0.00659s ago] {}
+2026-05-09 23:14:50,905 - INFO - ROLLBACK
+2026-05-09 23:14:52,795 - INFO - BEGIN (implicit)
+2026-05-09 23:14:52,796 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:14:52,797 - INFO - [generated in 0.00037s] {'id_3': 7}
+2026-05-09 23:14:52,800 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:14:52,800 - INFO - [generated in 0.00025s] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:14:52,803 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:14:52,803 - INFO - [generated in 0.00028s] {'rubrica_id_1': 2}
+2026-05-09 23:14:52,805 - INFO - ROLLBACK
+2026-05-09 23:14:52,807 - INFO - BEGIN (implicit)
+2026-05-09 23:14:52,808 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:14:52,808 - INFO - [cached since 0.0109s ago] {'id_3': 7}
+2026-05-09 23:14:52,809 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:14:52,809 - INFO - [cached since 0.00901s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:14:52,811 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:14:52,811 - INFO - [cached since 0.008225s ago] {'rubrica_id_1': 2}
+2026-05-09 23:14:52,813 - INFO - ROLLBACK
+2026-05-09 23:14:57,006 - INFO - BEGIN (implicit)
+2026-05-09 23:14:57,006 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:14:57,006 - INFO - [cached since 4.209s ago] {'id_3': 7}
+2026-05-09 23:14:57,007 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:14:57,008 - INFO - [cached since 4.207s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:14:57,008 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:14:57,009 - INFO - [cached since 4.206s ago] {'rubrica_id_1': 2}
+2026-05-09 23:14:57,009 - INFO - ROLLBACK
+2026-05-09 23:14:57,011 - INFO - BEGIN (implicit)
+2026-05-09 23:14:57,011 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:14:57,011 - INFO - [cached since 4.215s ago] {'id_3': 7}
+2026-05-09 23:14:57,012 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:14:57,013 - INFO - [cached since 4.212s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:14:57,014 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:14:57,014 - INFO - [cached since 4.211s ago] {'rubrica_id_1': 2}
+2026-05-09 23:14:57,015 - INFO - ROLLBACK
+2026-05-09 23:14:58,524 - INFO - BEGIN (implicit)
+2026-05-09 23:14:58,524 - INFO - BEGIN (implicit)
+2026-05-09 23:14:58,524 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:58,524 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:58,524 - INFO - [cached since 7.658s ago] {'id_1': 5}
+2026-05-09 23:14:58,525 - INFO - [cached since 7.658s ago] {'id_1': 5}
+2026-05-09 23:14:58,525 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:14:58,526 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:14:58,526 - INFO - [cached since 7.633s ago] {}
+2026-05-09 23:14:58,526 - INFO - [cached since 7.656s ago] {}
+2026-05-09 23:14:58,526 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:58,527 - INFO - [cached since 7.632s ago] {}
+2026-05-09 23:14:58,528 - INFO - ROLLBACK
+2026-05-09 23:14:58,528 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:58,529 - INFO - [cached since 7.633s ago] {}
+2026-05-09 23:14:58,530 - INFO - BEGIN (implicit)
+2026-05-09 23:14:58,530 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:14:58,530 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:58,530 - INFO - [cached since 7.633s ago] {}
+2026-05-09 23:14:58,530 - INFO - [cached since 7.664s ago] {'id_1': 5}
+2026-05-09 23:14:58,533 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:14:58,534 - INFO - ROLLBACK
+2026-05-09 23:14:58,534 - INFO - [cached since 7.663s ago] {}
+2026-05-09 23:14:58,535 - INFO - BEGIN (implicit)
+2026-05-09 23:14:58,537 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:58,537 - INFO - ROLLBACK
+2026-05-09 23:14:58,537 - INFO - [cached since 7.67s ago] {'id_1': 5}
+2026-05-09 23:14:58,538 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:14:58,538 - INFO - [cached since 7.645s ago] {}
+2026-05-09 23:14:58,539 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:58,539 - INFO - [cached since 7.644s ago] {}
+2026-05-09 23:14:58,539 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:58,539 - INFO - [cached since 7.643s ago] {}
+2026-05-09 23:14:58,540 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:14:58,540 - INFO - [cached since 7.642s ago] {}
+2026-05-09 23:14:58,541 - INFO - ROLLBACK
+2026-05-09 23:14:59,974 - INFO - BEGIN (implicit)
+2026-05-09 23:14:59,974 - INFO - BEGIN (implicit)
+2026-05-09 23:14:59,974 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:59,975 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:59,975 - INFO - [cached since 9.108s ago] {'id_1': 5}
+2026-05-09 23:14:59,975 - INFO - [cached since 9.108s ago] {'id_1': 5}
+2026-05-09 23:14:59,976 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:14:59,976 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:14:59,976 - INFO - [cached since 9.083s ago] {}
+2026-05-09 23:14:59,977 - INFO - [cached since 9.106s ago] {}
+2026-05-09 23:14:59,977 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:59,978 - INFO - [cached since 9.083s ago] {}
+2026-05-09 23:14:59,978 - INFO - ROLLBACK
+2026-05-09 23:14:59,979 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:59,979 - INFO - [cached since 9.083s ago] {}
+2026-05-09 23:14:59,981 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:14:59,981 - INFO - [cached since 9.083s ago] {}
+2026-05-09 23:14:59,982 - INFO - ROLLBACK
+2026-05-09 23:14:59,983 - INFO - BEGIN (implicit)
+2026-05-09 23:14:59,983 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:14:59,984 - INFO - [cached since 9.117s ago] {'id_1': 5}
+2026-05-09 23:14:59,984 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:14:59,985 - INFO - [cached since 9.092s ago] {}
+2026-05-09 23:14:59,985 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:59,985 - INFO - [cached since 9.091s ago] {}
+2026-05-09 23:14:59,986 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:14:59,986 - INFO - [cached since 9.09s ago] {}
+2026-05-09 23:14:59,987 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:14:59,987 - INFO - [cached since 9.089s ago] {}
+2026-05-09 23:14:59,988 - INFO - ROLLBACK
+2026-05-09 23:15:00,004 - INFO - BEGIN (implicit)
+2026-05-09 23:15:00,004 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:00,004 - INFO - [cached since 9.137s ago] {'id_1': 5}
+2026-05-09 23:15:00,006 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:15:00,006 - INFO - [cached since 9.135s ago] {}
+2026-05-09 23:15:00,008 - INFO - ROLLBACK
+2026-05-09 23:15:00,717 - INFO - BEGIN (implicit)
+2026-05-09 23:15:00,718 - INFO - BEGIN (implicit)
+2026-05-09 23:15:00,719 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:00,719 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:00,719 - INFO - [cached since 9.852s ago] {'id_1': 5}
+2026-05-09 23:15:00,719 - INFO - [cached since 9.852s ago] {'id_1': 5}
+2026-05-09 23:15:00,720 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:15:00,720 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:15:00,720 - INFO - [cached since 9.828s ago] {}
+2026-05-09 23:15:00,720 - INFO - [cached since 9.85s ago] {}
+2026-05-09 23:15:00,721 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:15:00,723 - INFO - [cached since 9.827s ago] {}
+2026-05-09 23:15:00,723 - INFO - ROLLBACK
+2026-05-09 23:15:00,723 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:15:00,725 - INFO - BEGIN (implicit)
+2026-05-09 23:15:00,725 - INFO - [cached since 9.828s ago] {}
+2026-05-09 23:15:00,725 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:00,725 - INFO - [cached since 9.858s ago] {'id_1': 5}
+2026-05-09 23:15:00,726 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:15:00,726 - INFO - [cached since 9.828s ago] {}
+2026-05-09 23:15:00,726 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:15:00,727 - INFO - [cached since 9.856s ago] {}
+2026-05-09 23:15:00,727 - INFO - ROLLBACK
+2026-05-09 23:15:00,729 - INFO - ROLLBACK
+2026-05-09 23:15:00,729 - INFO - BEGIN (implicit)
+2026-05-09 23:15:00,729 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:00,729 - INFO - [cached since 9.863s ago] {'id_1': 5}
+2026-05-09 23:15:00,731 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:15:00,731 - INFO - [cached since 9.838s ago] {}
+2026-05-09 23:15:00,731 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:15:00,731 - INFO - [cached since 9.837s ago] {}
+2026-05-09 23:15:00,732 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:15:00,732 - INFO - [cached since 9.836s ago] {}
+2026-05-09 23:15:00,733 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:15:00,733 - INFO - [cached since 9.835s ago] {}
+2026-05-09 23:15:00,733 - INFO - ROLLBACK
+2026-05-09 23:15:03,470 - INFO - BEGIN (implicit)
+2026-05-09 23:15:03,471 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:15:03,471 - INFO - [cached since 10.67s ago] {'id_3': 7}
+2026-05-09 23:15:03,472 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:15:03,472 - INFO - [cached since 10.67s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:15:03,473 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:15:03,473 - INFO - [cached since 10.67s ago] {'rubrica_id_1': 2}
+2026-05-09 23:15:03,475 - INFO - ROLLBACK
+2026-05-09 23:15:03,476 - INFO - BEGIN (implicit)
+2026-05-09 23:15:03,476 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:15:03,476 - INFO - [cached since 10.68s ago] {'id_3': 7}
+2026-05-09 23:15:03,477 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:15:03,477 - INFO - [cached since 10.68s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:15:03,479 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:15:03,479 - INFO - [cached since 10.68s ago] {'rubrica_id_1': 2}
+2026-05-09 23:15:03,483 - INFO - ROLLBACK
+2026-05-09 23:15:13,423 - INFO - BEGIN (implicit)
+2026-05-09 23:15:13,423 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:13,423 - INFO - [cached since 22.56s ago] {'id_1': 5}
+2026-05-09 23:15:13,424 - INFO - SELECT evaluacion.id, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor 
+FROM evaluacion 
+WHERE evaluacion.llamada_id = %(llamada_id_1)s
+2026-05-09 23:15:13,424 - INFO - [generated in 0.00018s] {'llamada_id_1': 7}
+2026-05-09 23:15:13,426 - INFO - UPDATE evaluacion SET error_critico=%(error_critico)s, comentario_auditor=%(comentario_auditor)s WHERE evaluacion.id = %(evaluacion_id)s
+2026-05-09 23:15:13,426 - INFO - [generated in 0.00018s] {'error_critico': False, 'comentario_auditor': 'Saludo bien', 'evaluacion_id': 21}
+2026-05-09 23:15:13,427 - INFO - COMMIT
+2026-05-09 23:15:13,428 - INFO - BEGIN (implicit)
+2026-05-09 23:15:13,428 - INFO - SELECT usuario.id AS usuario_id, usuario.email AS usuario_email, usuario.password_hash AS usuario_password_hash, usuario.nombre AS usuario_nombre, usuario.rol AS usuario_rol, usuario.cliente_id AS usuario_cliente_id, usuario.activo AS usuario_activo 
+FROM usuario 
+WHERE usuario.id = %(pk_1)s
+2026-05-09 23:15:13,429 - INFO - [generated in 0.00023s] {'pk_1': 5}
+2026-05-09 23:15:13,429 - INFO - SELECT evaluacion.id AS evaluacion_id, evaluacion.llamada_id AS evaluacion_llamada_id, evaluacion.detalles_json AS evaluacion_detalles_json, evaluacion.resumen_auditoria AS evaluacion_resumen_auditoria, evaluacion.puntaje_logrado AS evaluacion_puntaje_logrado, evaluacion.estado_auditoria AS evaluacion_estado_auditoria, evaluacion.error_critico AS evaluacion_error_critico, evaluacion.estado_validacion AS evaluacion_estado_validacion, evaluacion.validado_por_id AS evaluacion_validado_por_id, evaluacion.comentario_auditor AS evaluacion_comentario_auditor 
+FROM evaluacion 
+WHERE evaluacion.id = %(pk_1)s
+2026-05-09 23:15:13,429 - INFO - [generated in 0.00026s] {'pk_1': 21}
+2026-05-09 23:15:13,430 - INFO - [HU22] Llamada #7 → 'aprobada' por Alejandro@colektia.com | error_critico ahora: False | comentario: Saludo bien
+2026-05-09 23:15:13,430 - INFO - ROLLBACK
+2026-05-09 23:15:13,436 - INFO - BEGIN (implicit)
+2026-05-09 23:15:13,436 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN evaluacion ON llamada.id = evaluacion.llamada_id JOIN cliente ON llamada.cliente_id = cliente.id 
+WHERE llamada.id = %(id_3)s
+2026-05-09 23:15:13,436 - INFO - [cached since 20.64s ago] {'id_3': 7}
+2026-05-09 23:15:13,437 - INFO - SELECT rubrica.id, rubrica.nombre, rubrica.empresa, rubrica.mora_min, rubrica.mora_max, rubrica.activo 
+FROM rubrica 
+WHERE rubrica.empresa = %(empresa_1)s AND rubrica.activo = true AND rubrica.mora_min <= %(mora_min_1)s AND rubrica.mora_max >= %(mora_max_1)s
+2026-05-09 23:15:13,437 - INFO - [cached since 20.64s ago] {'empresa_1': 'Rapicredit', 'mora_min_1': 110, 'mora_max_1': 110}
+2026-05-09 23:15:13,437 - INFO - SELECT criterio.id, criterio.nombre, criterio.descripcion, criterio.peso, criterio.es_severidad, criterio.rubrica_id 
+FROM criterio 
+WHERE criterio.rubrica_id = %(rubrica_id_1)s
+2026-05-09 23:15:13,438 - INFO - [cached since 20.63s ago] {'rubrica_id_1': 2}
+2026-05-09 23:15:13,439 - INFO - ROLLBACK
+2026-05-09 23:15:14,891 - INFO - BEGIN (implicit)
+2026-05-09 23:15:14,891 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:14,892 - INFO - [cached since 24.02s ago] {'id_1': 5}
+2026-05-09 23:15:14,893 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:15:14,893 - INFO - [cached since 24.02s ago] {}
+2026-05-09 23:15:14,895 - INFO - ROLLBACK
+2026-05-09 23:15:14,900 - INFO - BEGIN (implicit)
+2026-05-09 23:15:14,900 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:14,900 - INFO - [cached since 24.03s ago] {'id_1': 5}
+2026-05-09 23:15:14,902 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:15:14,902 - INFO - [cached since 24.01s ago] {}
+2026-05-09 23:15:14,903 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:15:14,903 - INFO - [cached since 24.01s ago] {}
+2026-05-09 23:15:14,904 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:15:14,904 - INFO - [cached since 24.01s ago] {}
+2026-05-09 23:15:14,904 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:15:14,905 - INFO - [cached since 24.01s ago] {}
+2026-05-09 23:15:14,905 - INFO - ROLLBACK
+2026-05-09 23:15:14,912 - INFO - BEGIN (implicit)
+2026-05-09 23:15:14,912 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:14,912 - INFO - [cached since 24.05s ago] {'id_1': 5}
+2026-05-09 23:15:14,913 - INFO - SELECT llamada.id, llamada.cliente_id, llamada.call_id_origen, llamada.grabacion_url, llamada.transcripcion, llamada.metadatos_json, evaluacion.id AS id_1, evaluacion.llamada_id, evaluacion.detalles_json, evaluacion.resumen_auditoria, evaluacion.puntaje_logrado, evaluacion.estado_auditoria, evaluacion.error_critico, evaluacion.estado_validacion, evaluacion.validado_por_id, evaluacion.comentario_auditor, cliente.id AS id_2, cliente.nombre_empresa, cliente.pais, cliente.medio_de_pago, cliente.guion_identificacion, cliente.guion_saludo, cliente.guion_entrega_mensaje, cliente.guion_negociacion, cliente.guion_agenda_compromiso, cliente.guion_cierre, cliente.reglas_adicionales 
+FROM llamada JOIN cliente ON llamada.cliente_id = cliente.id LEFT OUTER JOIN evaluacion ON llamada.id = evaluacion.llamada_id ORDER BY llamada.id DESC
+2026-05-09 23:15:14,913 - INFO - [cached since 24.04s ago] {}
+2026-05-09 23:15:14,916 - INFO - ROLLBACK
+2026-05-09 23:15:14,919 - INFO - BEGIN (implicit)
+2026-05-09 23:15:14,919 - INFO - SELECT usuario.id, usuario.email, usuario.password_hash, usuario.nombre, usuario.rol, usuario.cliente_id, usuario.activo 
+FROM usuario 
+WHERE usuario.id = %(id_1)s
+2026-05-09 23:15:14,919 - INFO - [cached since 24.05s ago] {'id_1': 5}
+2026-05-09 23:15:14,920 - INFO - SELECT count(llamada.id) AS count_1 
+FROM llamada 
+WHERE true
+2026-05-09 23:15:14,920 - INFO - [cached since 24.03s ago] {}
+2026-05-09 23:15:14,921 - INFO - SELECT count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:15:14,921 - INFO - [cached since 24.03s ago] {}
+2026-05-09 23:15:14,922 - INFO - SELECT avg(evaluacion.puntaje_logrado) AS avg_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true)
+2026-05-09 23:15:14,922 - INFO - [cached since 24.03s ago] {}
+2026-05-09 23:15:14,923 - INFO - SELECT evaluacion.estado_auditoria, count(evaluacion.id) AS count_1 
+FROM evaluacion 
+WHERE evaluacion.llamada_id IN (SELECT llamada.id 
+FROM llamada 
+WHERE true) GROUP BY evaluacion.estado_auditoria
+2026-05-09 23:15:14,923 - INFO - [cached since 24.03s ago] {}
+2026-05-09 23:15:14,925 - INFO - ROLLBACK
