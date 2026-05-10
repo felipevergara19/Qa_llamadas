@@ -354,15 +354,22 @@ export default function Settings() {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="font-bold text-gray-900">{r.nombre}</h3>
-                      <span className="inline-block mt-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-md">
-                        {r.empresa}
-                      </span>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-md">
+                          {r.empresa}
+                        </span>
+                        {/* HU12: Badge de versión */}
+                        <span className={`px-2 py-0.5 text-xs font-bold rounded-md ${r.activo ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                          v{r.version ?? 1}
+                        </span>
+                        {!r.activo && (
+                          <span className="px-2 py-0.5 text-xs font-semibold rounded-md bg-red-50 text-red-500">
+                            Archivada
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    {r.activo ? (
-                      <span className="w-3 h-3 bg-green-500 rounded-full" title="Activa"></span>
-                    ) : (
-                      <span className="w-3 h-3 bg-red-500 rounded-full" title="Inactiva"></span>
-                    )}
+                    <span className={`w-3 h-3 rounded-full flex-shrink-0 mt-1 ${r.activo ? 'bg-green-500' : 'bg-gray-300'}`} title={r.activo ? 'Activa' : 'Archivada'} />
                   </div>
                   
                   <div className="flex-1">

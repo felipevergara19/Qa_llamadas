@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Settings, LogOut, UserCircle, Users } from 'lucide-react';
+import { LayoutDashboard, Settings, LogOut, UserCircle, Users, Flame } from 'lucide-react';
 
-import Dashboard   from './views/Dashboard';
-import CallDetail  from './views/CallDetail';
+import Dashboard    from './views/Dashboard';
+import CallDetail   from './views/CallDetail';
 import SettingsView from './views/Settings';
-import Login       from './views/Login';
-import UsersView   from './views/Users';
+import Login        from './views/Login';
+import UsersView    from './views/Users';
+import HeatmapView  from './views/Heatmap';
 
 // HU01: Guard — redirige a /login si no hay token
 function PrivateRoute({ children }) {
@@ -61,6 +62,16 @@ function AppLayout() {
 
           {['admin', 'analista_qa'].includes(user?.rol) && (
             <Link
+              to="/heatmap"
+              className={`flex items-center px-4 py-3 rounded-lg transition-colors ${location.pathname === '/heatmap' ? 'bg-orange-50 text-orange-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              <Flame className="w-5 h-5 mr-3" />
+              Mapa de Errores
+            </Link>
+          )}
+
+          {['admin', 'analista_qa'].includes(user?.rol) && (
+            <Link
               to="/settings"
               className={`flex items-center px-4 py-3 rounded-lg transition-colors ${location.pathname === '/settings' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
             >
@@ -100,6 +111,7 @@ function AppLayout() {
           <Route path="/llamada/:id" element={<CallDetail />} />
           <Route path="/settings"   element={<SettingsView />} />
           <Route path="/usuarios"   element={<UsersView />} />
+          <Route path="/heatmap"    element={<HeatmapView />} />
         </Routes>
       </main>
     </div>

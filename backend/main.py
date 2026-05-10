@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Request, BackgroundTasks, status
+from fastapi import FastAPI, Depends, HTTPException, Request, BackgroundTasks, status, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.security import OAuth2PasswordRequestForm
@@ -91,13 +91,25 @@ def procesar_llamadas_pendientes():
                     db=db,
                     prompt_base=prompt_base_str
                 )
+                # HU12: guardar qué versión de rúbrica se usó
+                dias_mora = llamada.metadatos_json.get("dias_mora", 0) or 0
+                rubrica_usada = db.exec(
+                    select(Rubrica).where(
+                        Rubrica.empresa == cliente.nombre_empresa,
+                        Rubrica.activo == True,
+                        Rubrica.mora_min <= dias_mora,
+                        Rubrica.mora_max >= dias_mora,
+                    )
+                ).first()
+
                 nueva_evaluacion = Evaluacion(
                     llamada_id=llamada.id,
                     detalles_json=resultado_ia,
                     resumen_auditoria=resultado_ia.get("Resumen", "Sin resumen"),
                     estado_auditoria=resultado_ia.get("Estatus_detectado", "Desconocido"),
                     puntaje_logrado=puntos,
-                    error_critico=error_critico
+                    error_critico=error_critico,
+                    rubrica_id=rubrica_usada.id if rubrica_usada else None,
                 )
                 db.add(nueva_evaluacion)
                 db.commit()
@@ -255,6 +267,17 @@ def reauditar_llamada(
             prompt_base=prompt_base_str,
         )
 
+        # HU12: guardar qué versión de rúbrica se usó en la re-auditoría
+        dias_mora_re = llamada.metadatos_json.get("dias_mora", 0) or 0
+        rubrica_usada_re = db.exec(
+            select(Rubrica).where(
+                Rubrica.empresa == cliente.nombre_empresa,
+                Rubrica.activo == True,
+                Rubrica.mora_min <= dias_mora_re,
+                Rubrica.mora_max >= dias_mora_re,
+            )
+        ).first()
+
         nueva_evaluacion = Evaluacion(
             llamada_id=llamada.id,
             detalles_json=resultado_ia,
@@ -262,7 +285,8 @@ def reauditar_llamada(
             estado_auditoria=resultado_ia.get("Estatus_detectado", "Desconocido"),
             puntaje_logrado=puntos,
             error_critico=error_critico,
-            estado_validacion="pendiente",  # Resetear validación humana
+            estado_validacion="pendiente",
+            rubrica_id=rubrica_usada_re.id if rubrica_usada_re else None,
         )
         db.add(nueva_evaluacion)
         db.commit()
@@ -353,9 +377,16 @@ def obtener_detalle_evaluacion(llamada_id: int, db: Session = Depends(get_sessio
             if item["es_severidad"] and not item["resultado"]
         ]
 
+    # HU12: Versión de rúbrica usada
+    rubrica_version = None
+    if evaluacion.rubrica_id:
+        r = db.exec(select(Rubrica).where(Rubrica.id == evaluacion.rubrica_id)).first()
+        rubrica_version = r.version if r else None
+
     return {
         "id_auditoria": evaluacion.id,
         "cliente": cliente.nombre_empresa,
+        "rubrica_version": rubrica_version,
         "fecha_llamada": llamada.metadatos_json.get("fecha_llamada"),
         "datos_colly": {
             "estatus_original": llamada.metadatos_json.get("estatus_colly"),
@@ -500,12 +531,81 @@ def listar_rubricas(db: Session = Depends(get_session)):
             "nombre": r.nombre,
             "empresa": r.empresa,
             "activo": r.activo,
+            "version": r.version,
             "criterios": [
                 {"nombre": c.nombre, "descripcion": c.descripcion, "peso": c.peso, "es_severidad": c.es_severidad}
                 for c in criterios
             ]
         })
     return lista
+
+
+@app.put("/api/v1/rubricas/{rubrica_id}", summary="HU12: Versionar rúbrica — archiva la actual y crea nueva versión")
+def versionar_rubrica(
+    rubrica_id: int,
+    datos: RubricaCreate,
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_qa_or_admin),
+):
+    rubrica_actual = db.exec(select(Rubrica).where(Rubrica.id == rubrica_id)).first()
+    if not rubrica_actual:
+        raise HTTPException(status_code=404, detail="Rúbrica no encontrada")
+
+    # Archivar versión actual
+    rubrica_actual.activo = False
+    db.add(rubrica_actual)
+    db.flush()
+
+    # Crear nueva versión
+    nueva = Rubrica(
+        nombre   = datos.nombre,
+        empresa  = datos.empresa,
+        mora_min = rubrica_actual.mora_min,
+        mora_max = rubrica_actual.mora_max,
+        activo   = True,
+        version  = rubrica_actual.version + 1,
+    )
+    db.add(nueva)
+    db.flush()
+
+    for p in datos.puntos:
+        db.add(Criterio(
+            nombre       = p.nombre,
+            descripcion  = p.descripcion,
+            peso         = p.peso,
+            es_severidad = p.es_severidad,
+            rubrica_id   = nueva.id,
+        ))
+    db.commit()
+    logger.info(f"[HU12] Rúbrica #{rubrica_id} archivada → nueva versión #{nueva.id} (v{nueva.version})")
+    return {
+        "mensaje":          "Nueva versión creada",
+        "version_anterior": rubrica_actual.version,
+        "nueva_version":    nueva.version,
+        "nueva_id":         nueva.id,
+    }
+
+
+@app.get("/api/v1/rubricas/{empresa}/historial", summary="HU12: Historial de versiones de rúbricas por empresa")
+def historial_rubricas(
+    empresa: str,
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_qa_or_admin),
+):
+    versiones = db.exec(
+        select(Rubrica)
+        .where(Rubrica.empresa == empresa)
+        .order_by(Rubrica.version.desc())
+    ).all()
+    return [
+        {
+            "id":      r.id,
+            "nombre":  r.nombre,
+            "version": r.version,
+            "activo":  r.activo,
+        }
+        for r in versiones
+    ]
 
 # =============================================================================
 # HU26 - TUNING DE PROMPT
@@ -704,6 +804,169 @@ def actualizar_validacion(
         "error_critico": evaluacion.error_critico,
         "comentario_auditor": datos.comentario,
         "validado_por": current_user.email,
+    }
+
+
+# =============================================================================
+# HU08 - CARGA MANUAL DE TRANSCRIPCIONES
+# Permite al analista QA subir un .txt y encolarlo para auditoría IA.
+# =============================================================================
+@app.post("/api/v1/llamadas/carga-manual", summary="HU08: Subir transcripción manual (.txt)")
+async def carga_manual_transcripcion(
+    empresa:    str        = Form(...),
+    call_id:    str        = Form(default=""),
+    estatus:    str        = Form(default="Manual"),
+    dias_mora:  int        = Form(default=0),
+    archivo:    UploadFile = File(...),
+    db:         Session    = Depends(get_session),
+    current_user: Usuario  = Depends(require_qa_or_admin),
+):
+    # Validar que sea un archivo de texto
+    if not archivo.filename.endswith(('.txt', '.text')):
+        raise HTTPException(status_code=400, detail="Solo se aceptan archivos .txt")
+
+    contenido = await archivo.read()
+    try:
+        transcripcion = contenido.decode('utf-8')
+    except UnicodeDecodeError:
+        transcripcion = contenido.decode('latin-1')
+
+    if not transcripcion.strip():
+        raise HTTPException(status_code=400, detail="El archivo está vacío")
+
+    # Buscar o crear el cliente
+    cliente_bd = db.exec(select(Cliente).where(Cliente.nombre_empresa == empresa)).first()
+    if not cliente_bd:
+        cliente_bd = Cliente(nombre_empresa=empresa)
+        db.add(cliente_bd)
+        db.commit()
+        db.refresh(cliente_bd)
+
+    # Generar call_id si no se proporcionó
+    import uuid
+    call_id_final = call_id.strip() or f"MANUAL-{uuid.uuid4().hex[:8].upper()}"
+
+    metadatos = {
+        "id_colly":       call_id_final,
+        "cuenta_cliente": "Carga Manual",
+        "estatus_colly":  estatus,
+        "proveedor":      "Manual QA",
+        "fecha_llamada":  __import__('datetime').datetime.utcnow().isoformat(),
+        "dias_mora":      dias_mora,
+        "origen":         "carga_manual",
+        "subido_por":     current_user.email,
+        "archivo_origen": archivo.filename,
+    }
+
+    nueva_llamada = Llamada(
+        cliente_id      = cliente_bd.id,
+        call_id_origen  = call_id_final,
+        grabacion_url   = "N/A - Carga manual",
+        transcripcion   = transcripcion,
+        metadatos_json  = metadatos,
+    )
+    db.add(nueva_llamada)
+    db.commit()
+    db.refresh(nueva_llamada)
+
+    logger.info(
+        f"[HU08] Transcripción manual cargada por {current_user.email} — "
+        f"empresa: {empresa} | llamada ID: {nueva_llamada.id} | archivo: {archivo.filename}"
+    )
+
+    return {
+        "estado":        "encolada",
+        "mensaje":       "Transcripción cargada correctamente. Será auditada en el próximo batch.",
+        "id_interno":    nueva_llamada.id,
+        "call_id":       call_id_final,
+        "empresa":       empresa,
+        "caracteres":    len(transcripcion),
+    }
+
+
+# =============================================================================
+# HU21 - MAPA DE CALOR DE ERRORES POR CRITERIO
+# Agrega frecuencia de fallo por criterio desde detalles_json de evaluaciones.
+# =============================================================================
+@app.get("/api/v1/metricas/errores", summary="HU21: Frecuencia de fallo por criterio (heatmap)")
+def mapa_errores(
+    empresa: Optional[str] = None,
+    db: Session = Depends(get_session),
+    current_user: Usuario = Depends(require_qa_or_admin),
+):
+    CAMPOS_META = {"Resumen", "Estatus_detectado", "Estatus_coherente", "Errores_criticos_encontrados"}
+
+    # Filtrar por empresa si se especifica
+    query = select(Evaluacion, Llamada, Cliente).join(
+        Llamada, Evaluacion.llamada_id == Llamada.id
+    ).join(Cliente, Llamada.cliente_id == Cliente.id)
+
+    if empresa:
+        query = query.where(Cliente.nombre_empresa == empresa)
+
+    resultados = db.exec(query).all()
+
+    conteo_fallos: dict = {}
+    conteo_total:  dict = {}
+
+    for evaluacion, _, _ in resultados:
+        detalles = evaluacion.detalles_json or {}
+        for criterio, valor in detalles.items():
+            if criterio in CAMPOS_META:
+                continue
+            paso = valor in (1, True, "1", "true")
+            conteo_total[criterio]  = conteo_total.get(criterio, 0) + 1
+            if not paso:
+                conteo_fallos[criterio] = conteo_fallos.get(criterio, 0) + 1
+
+    criterios = []
+    for nombre, total in conteo_total.items():
+        fallos = conteo_fallos.get(nombre, 0)
+        criterios.append({
+            "criterio":        nombre,
+            "total_evaluado":  total,
+            "total_fallos":    fallos,
+            "tasa_fallo":      round((fallos / total) * 100, 1) if total > 0 else 0,
+        })
+
+    criterios.sort(key=lambda x: x["tasa_fallo"], reverse=True)
+
+    empresas_disponibles = [c.nombre_empresa for c in db.exec(select(Cliente)).all()]
+
+    return {
+        "empresa_filtro":       empresa,
+        "empresas_disponibles": empresas_disponibles,
+        "total_evaluaciones":   len(resultados),
+        "criterios":            criterios,
+    }
+
+
+# =============================================================================
+# HU24 - MÉTRICA DE PRECISIÓN DE IA
+# Calcula cuántas evaluaciones de la IA fueron confirmadas vs corregidas por humanos.
+# =============================================================================
+@app.get("/api/v1/metricas/precision", summary="HU24: Accuracy de la IA vs validación humana (admin)")
+def metrica_precision_ia(
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_admin),
+):
+    total       = db.exec(select(func.count(Evaluacion.id))).first() or 0
+    aprobadas   = db.exec(select(func.count(Evaluacion.id)).where(Evaluacion.estado_validacion == "aprobada")).first() or 0
+    rechazadas  = db.exec(select(func.count(Evaluacion.id)).where(Evaluacion.estado_validacion == "rechazada")).first() or 0
+    pendientes  = db.exec(select(func.count(Evaluacion.id)).where(Evaluacion.estado_validacion == "pendiente")).first() or 0
+
+    revisadas = aprobadas + rechazadas
+    accuracy  = round((aprobadas / revisadas) * 100, 1) if revisadas > 0 else None
+
+    return {
+        "total_evaluaciones":   total,
+        "revisadas_por_humano": revisadas,
+        "aprobadas_por_humano": aprobadas,
+        "rechazadas_por_humano": rechazadas,
+        "pendientes_revision":  pendientes,
+        "accuracy_porcentaje":  accuracy,   # None si nadie ha revisado aún
+        "meta_porcentaje":      90.0,
+        "cumple_meta":          accuracy is not None and accuracy >= 90.0,
     }
 
 

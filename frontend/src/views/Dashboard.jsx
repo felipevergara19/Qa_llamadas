@@ -1,26 +1,42 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
-import { Search, AlertCircle, CheckCircle2, BarChart2, Phone, ShieldCheck, Star, X, FileSpreadsheet, FileText } from 'lucide-react';
+import { Search, AlertCircle, CheckCircle2, BarChart2, Phone, ShieldCheck, Star, X, FileSpreadsheet, FileText, BrainCircuit, Upload } from 'lucide-react';
 
 export default function Dashboard() {
   const [llamadas, setLlamadas]   = useState([]);
   const [kpis, setKpis]           = useState(null);
+  const [precision, setPrecision] = useState(null);
   const [loading, setLoading]       = useState(true);
+
+  const userRaw   = localStorage.getItem('qa_user');
+  const userActual = userRaw ? JSON.parse(userRaw) : null;
+  const esAdmin   = userActual?.rol === 'admin';
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEmpresa, setFilterEmpresa] = useState('');
   const [fechaDesde, setFechaDesde] = useState('');
   const [fechaHasta, setFechaHasta] = useState('');
   const [alertaDismissed, setAlertaDismissed] = useState(false);
+  const [showUpload, setShowUpload]     = useState(false);
+  const [uploadForm, setUploadForm]     = useState({ empresa: '', call_id: '', estatus: 'Manual', dias_mora: 0 });
+  const [uploadFile, setUploadFile]     = useState(null);
+  const [uploading, setUploading]       = useState(false);
+  const [uploadResult, setUploadResult] = useState(null); // { ok, msg }
 
   useEffect(() => {
-    Promise.all([
+    const peticiones = [
       api.get('/api/v1/llamadas'),
       api.get('/api/v1/dashboard'),
-    ]).then(([resLlamadas, resDash]) => {
-      setLlamadas(resLlamadas.data.data || []);
-      setKpis(resDash.data);
-    }).catch(console.error)
+    ];
+    if (esAdmin) peticiones.push(api.get('/api/v1/metricas/precision'));
+
+    Promise.all(peticiones)
+      .then(([resLlamadas, resDash, resPrecision]) => {
+        setLlamadas(resLlamadas.data.data || []);
+        setKpis(resDash.data);
+        if (resPrecision) setPrecision(resPrecision.data);
+      })
+      .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
@@ -141,12 +157,50 @@ export default function Dashboard() {
     win.document.close();
   };
 
+  // ── HU08: Carga manual ───────────────────────────────────────────────────────
+  const handleUpload = async () => {
+    if (!uploadForm.empresa.trim()) { setUploadResult({ ok: false, msg: 'Ingresa el nombre de la empresa.' }); return; }
+    if (!uploadFile)                { setUploadResult({ ok: false, msg: 'Selecciona un archivo .txt.' }); return; }
+    setUploading(true);
+    setUploadResult(null);
+    try {
+      const fd = new FormData();
+      fd.append('empresa',   uploadForm.empresa);
+      fd.append('call_id',   uploadForm.call_id);
+      fd.append('estatus',   uploadForm.estatus);
+      fd.append('dias_mora', uploadForm.dias_mora);
+      fd.append('archivo',   uploadFile);
+      const res = await api.post('/api/v1/llamadas/carga-manual', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setUploadResult({ ok: true, msg: `✓ Llamada #${res.data.id_interno} encolada correctamente (${res.data.caracteres} caracteres).` });
+      setUploadFile(null);
+      setUploadForm({ empresa: '', call_id: '', estatus: 'Manual', dias_mora: 0 });
+      // Refrescar listado
+      api.get('/api/v1/llamadas').then(r => setLlamadas(r.data.data || []));
+    } catch (e) {
+      setUploadResult({ ok: false, msg: e.response?.data?.detail || 'Error al cargar el archivo.' });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-slate-800">Panel de Auditorias</h1>
-        {/* HU20: Botones de exportación */}
         <div className="flex items-center gap-2">
+          {/* HU08: Carga manual */}
+          {['admin', 'analista_qa'].includes(userActual?.rol) && (
+            <button
+              onClick={() => { setShowUpload(true); setUploadResult(null); }}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+              Cargar transcripción
+            </button>
+          )}
+          {/* HU20: Botones de exportación */}
           <button
             onClick={exportarExcel}
             disabled={filteredLlamadas.length === 0}
@@ -259,6 +313,51 @@ export default function Dashboard() {
             ))}
           </div>
 
+          {/* HU24: Métrica de precisión de IA — solo admin */}
+          {esAdmin && precision && (
+            <div className={`mb-4 rounded-xl border p-4 shadow-sm flex items-center gap-5 ${
+              precision.accuracy_porcentaje === null
+                ? 'bg-gray-50 border-gray-200'
+                : precision.cumple_meta
+                  ? 'bg-green-50 border-green-200'
+                  : precision.accuracy_porcentaje >= 70
+                    ? 'bg-yellow-50 border-yellow-200'
+                    : 'bg-red-50 border-red-200'
+            }`}>
+              <BrainCircuit className={`w-8 h-8 flex-shrink-0 ${
+                precision.accuracy_porcentaje === null ? 'text-gray-400'
+                  : precision.cumple_meta ? 'text-green-600'
+                  : precision.accuracy_porcentaje >= 70 ? 'text-yellow-600'
+                  : 'text-red-600'
+              }`} />
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">
+                  Precisión de la IA — Métrica HU24
+                </p>
+                <div className="flex items-baseline gap-3 flex-wrap">
+                  <span className="text-3xl font-bold text-gray-900">
+                    {precision.accuracy_porcentaje !== null ? `${precision.accuracy_porcentaje}%` : 'Sin datos'}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    meta: ≥ {precision.meta_porcentaje}%
+                    {precision.cumple_meta
+                      ? <span className="ml-2 text-green-600 font-semibold">✓ Cumple</span>
+                      : precision.accuracy_porcentaje !== null
+                        ? <span className="ml-2 text-red-600 font-semibold">✗ No cumple</span>
+                        : null
+                    }
+                  </span>
+                </div>
+              </div>
+              <div className="text-right text-xs text-gray-500 space-y-0.5 flex-shrink-0">
+                <div><span className="font-semibold text-gray-700">{precision.revisadas_por_humano}</span> revisadas</div>
+                <div><span className="font-semibold text-green-600">{precision.aprobadas_por_humano}</span> aprobadas</div>
+                <div><span className="font-semibold text-red-600">{precision.rechazadas_por_humano}</span> rechazadas</div>
+                <div><span className="font-semibold text-gray-400">{precision.pendientes_revision}</span> pendientes</div>
+              </div>
+            </div>
+          )}
+
           {/* DISTRIBUCION ESTATUS */}
           {Object.keys(kpisVivos.distribucion_estatus || {}).length > 0 && (
             <div className="mb-6 bg-white rounded-xl border border-gray-200 shadow-sm p-4">
@@ -340,6 +439,100 @@ export default function Dashboard() {
           </table>
         </div>
       </div>
+
+      {/* HU08: Modal de carga manual de transcripción */}
+      {showUpload && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <Upload className="w-5 h-5 text-blue-600" />
+                Cargar transcripción manual
+              </h2>
+              <button onClick={() => { setShowUpload(false); setUploadResult(null); }} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Empresa *</label>
+                <input
+                  type="text"
+                  value={uploadForm.empresa}
+                  onChange={e => setUploadForm({ ...uploadForm, empresa: e.target.value })}
+                  placeholder="Ej: Sistecredito"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Call ID (opcional)</label>
+                  <input
+                    type="text"
+                    value={uploadForm.call_id}
+                    onChange={e => setUploadForm({ ...uploadForm, call_id: e.target.value })}
+                    placeholder="Auto-generado si vacío"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Días de mora</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={uploadForm.dias_mora}
+                    onChange={e => setUploadForm({ ...uploadForm, dias_mora: parseInt(e.target.value) || 0 })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Archivo .txt *</label>
+                <div className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${uploadFile ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-blue-300'}`}>
+                  <input
+                    type="file"
+                    accept=".txt,.text"
+                    className="hidden"
+                    id="file-upload"
+                    onChange={e => setUploadFile(e.target.files[0] || null)}
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    {uploadFile ? (
+                      <span className="text-sm text-blue-700 font-medium">📄 {uploadFile.name}</span>
+                    ) : (
+                      <span className="text-sm text-gray-500">Haz clic para seleccionar un archivo .txt</span>
+                    )}
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {uploadResult && (
+              <div className={`mt-3 text-sm px-3 py-2 rounded-lg font-medium ${uploadResult.ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                {uploadResult.msg}
+              </div>
+            )}
+
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={() => { setShowUpload(false); setUploadResult(null); }}
+                className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+              >
+                Cerrar
+              </button>
+              <button
+                onClick={handleUpload}
+                disabled={uploading}
+                className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                <Upload className="w-4 h-4" />
+                {uploading ? 'Cargando...' : 'Cargar y encolar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -79,6 +79,8 @@ class Evaluacion(SQLModel, table=True):
     estado_validacion: str = Field(default="pendiente")
     validado_por_id: Optional[int] = Field(default=None, foreign_key="usuario.id")
     comentario_auditor: Optional[str] = None  # Feedback del analista QA
+    # HU12: Versión de rúbrica usada en esta evaluación
+    rubrica_id: Optional[int] = Field(default=None, foreign_key="rubrica.id")
 
 # --- TABLA 4: GUIONES CLIENTES ---
 # NOTA: Tabla reservada para Sprint 4 (HU25 - Gestión de guiones por cliente vía UI).
@@ -104,6 +106,8 @@ class Rubrica(SQLModel, table=True):
     mora_min: Optional[int] = Field(default=0)
     mora_max: Optional[int] = Field(default=9999)
     activo: bool = Field(default=True)
+    # HU12: Versionado
+    version: int = Field(default=1)
     criterios: List[Criterio] = Relationship(back_populates="rubrica")
 
 class ConfiguracionSistema(SQLModel, table=True):

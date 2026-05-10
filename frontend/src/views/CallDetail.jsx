@@ -265,7 +265,15 @@ export default function CallDetail() {
 
         {/* HU14: FEEDBACK POR CRITERIO */}
         <div className="p-6 flex-1">
-          <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Evaluacion por Criterio</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">Evaluacion por Criterio</h3>
+            {/* HU12: Versión de rúbrica usada */}
+            {data.rubrica_version && (
+              <span className="text-xs px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full font-semibold">
+                Rúbrica v{data.rubrica_version}
+              </span>
+            )}
+          </div>
           <div className="space-y-3">
             {feedbackItems.map((item) => (
               <div
