@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
-import { Search, AlertCircle, CheckCircle2, BarChart2, Phone, ShieldCheck, Star, X } from 'lucide-react';
+import { Search, AlertCircle, CheckCircle2, BarChart2, Phone, ShieldCheck, Star, X, FileSpreadsheet, FileText } from 'lucide-react';
 
 export default function Dashboard() {
   const [llamadas, setLlamadas]   = useState([]);
   const [kpis, setKpis]           = useState(null);
-  const [loading, setLoading]     = useState(true);
-  const [searchTerm, setSearchTerm]       = useState('');
+  const [loading, setLoading]       = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [filterEmpresa, setFilterEmpresa] = useState('');
+  const [fechaDesde, setFechaDesde] = useState('');
+  const [fechaHasta, setFechaHasta] = useState('');
   const [alertaDismissed, setAlertaDismissed] = useState(false);
 
   useEffect(() => {
@@ -27,8 +29,35 @@ export default function Dashboard() {
       item.id_llamada.toString().includes(searchTerm) ||
       item.empresa.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEmpresa = filterEmpresa ? item.empresa === filterEmpresa : true;
-    return matchesSearch && matchesEmpresa;
+    const fecha = String(item.fecha_llamada).substring(0, 10);
+    const matchesDesde = fechaDesde ? fecha >= fechaDesde : true;
+    const matchesHasta = fechaHasta ? fecha <= fechaHasta : true;
+    return matchesSearch && matchesEmpresa && matchesDesde && matchesHasta;
   });
+
+  // HU18: KPIs recalculados desde las llamadas filtradas
+  const hayFiltros = searchTerm || filterEmpresa || fechaDesde || fechaHasta;
+  const kpisVivos = (() => {
+    if (!hayFiltros && kpis) return kpis; // sin filtros → usar datos del backend
+    const total     = filteredLlamadas.length;
+    const auditadas = filteredLlamadas.filter(l => l.resultados_ia.estatus_ia !== 'Pendiente').length;
+    const puntajes  = filteredLlamadas.map(l => l.resultados_ia.puntaje).filter(p => p > 0);
+    const promedio  = puntajes.length ? (puntajes.reduce((a, b) => a + b, 0) / puntajes.length) : 0;
+    const dist      = {};
+    filteredLlamadas.forEach(l => {
+      const e = l.resultados_ia.estatus_ia || 'Pendiente';
+      dist[e] = (dist[e] || 0) + 1;
+    });
+    return {
+      kpis_globales: {
+        total_llamadas_recibidas: total,
+        total_llamadas_auditadas: auditadas,
+        cobertura_porcentaje: total > 0 ? +((auditadas / total) * 100).toFixed(1) : 0,
+        calidad_promedio: +promedio.toFixed(2),
+      },
+      distribucion_estatus: dist,
+    };
+  })();
 
   const getStatusBadge = (status) => {
     const s = (status || '').toLowerCase();
@@ -47,10 +76,94 @@ export default function Dashboard() {
   const uniqueEmpresas = [...new Set(llamadas.map(l => l.empresa))];
   const llamadasCriticas = llamadas.filter(l => l.resultados_ia.error_critico);
 
+  // ── HU20: Exportación (sin librerías externas) ───────────────────────────────
+  const HEADERS = ['ID', 'Empresa', 'Fecha', 'Días Mora', 'Estatus Original', 'Estatus IA', 'Puntaje', 'Error Crítico'];
+
+  const filaCSV = (ll) => [
+    `#${ll.id_llamada}`,
+    ll.empresa,
+    String(ll.fecha_llamada).substring(0, 10),
+    ll.dias_mora,
+    ll.estatus_original,
+    ll.resultados_ia.estatus_ia,
+    `${ll.resultados_ia.puntaje} pts`,
+    ll.resultados_ia.error_critico ? 'Sí' : 'No',
+  ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+
+  const exportarExcel = () => {
+    const csv = [
+      '﻿' + HEADERS.join(','),   // BOM para que Excel abra en UTF-8
+      ...filteredLlamadas.map(filaCSV),
+    ].join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `auditoria_qa_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportarPDF = () => {
+    const fecha = new Date().toLocaleString('es-CL');
+    const filas = filteredLlamadas.map(ll => `
+      <tr>
+        <td>#${ll.id_llamada}</td>
+        <td>${ll.empresa}</td>
+        <td>${String(ll.fecha_llamada).substring(0, 10)}</td>
+        <td>${ll.dias_mora}d</td>
+        <td>${ll.estatus_original}</td>
+        <td>${ll.resultados_ia.estatus_ia}</td>
+        <td>${ll.resultados_ia.puntaje} pts</td>
+        <td style="${ll.resultados_ia.error_critico ? 'color:#dc2626;font-weight:bold' : ''}">${ll.resultados_ia.error_critico ? '⚠ Sí' : 'No'}</td>
+      </tr>`).join('');
+
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+      <title>Reporte QA</title>
+      <style>
+        body { font-family: Arial, sans-serif; font-size: 11px; margin: 20px; }
+        h2   { color: #1e40af; margin-bottom: 4px; }
+        p    { color: #6b7280; margin: 0 0 12px; }
+        table{ width: 100%; border-collapse: collapse; }
+        th   { background: #1d4ed8; color: white; padding: 6px 8px; text-align: left; font-size: 10px; }
+        td   { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; }
+        tr:nth-child(even) td { background: #f8fafc; }
+      </style></head><body>
+      <h2>Reporte de Auditorías QA — Colektia</h2>
+      <p>Generado: ${fecha} | Total: ${filteredLlamadas.length} llamadas</p>
+      <table><thead><tr>${HEADERS.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${filas}</tbody></table>
+      <script>window.onload = () => { window.print(); }<\/script>
+      </body></html>`;
+
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+  };
+
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-slate-800">Panel de Auditorias</h1>
+        {/* HU20: Botones de exportación */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportarExcel}
+            disabled={filteredLlamadas.length === 0}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            Excel
+          </button>
+          <button
+            onClick={exportarPDF}
+            disabled={filteredLlamadas.length === 0}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors"
+          >
+            <FileText className="w-4 h-4" />
+            PDF
+          </button>
+        </div>
       </div>
 
       {/* HU25: Banner de alerta crítica global */}
@@ -78,15 +191,63 @@ export default function Dashboard() {
         </div>
       )}
 
-      {kpis && (
+      {/* HU18: Panel de filtros dinámicos */}
+      <div className="mb-4 bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+        <div className="flex flex-wrap gap-3 items-end">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Desde</label>
+            <input
+              type="date"
+              value={fechaDesde}
+              onChange={e => setFechaDesde(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Hasta</label>
+            <input
+              type="date"
+              value={fechaHasta}
+              onChange={e => setFechaHasta(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Empresa</label>
+            <select
+              value={filterEmpresa}
+              onChange={e => setFilterEmpresa(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="">Todas las empresas</option>
+              {uniqueEmpresas.map(e => <option key={e} value={e}>{e}</option>)}
+            </select>
+          </div>
+          {hayFiltros && (
+            <button
+              onClick={() => { setFechaDesde(''); setFechaHasta(''); setFilterEmpresa(''); setSearchTerm(''); }}
+              className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 pb-1"
+            >
+              <X className="w-3 h-3" /> Limpiar filtros
+            </button>
+          )}
+          {hayFiltros && (
+            <span className="text-xs text-gray-400 pb-1 ml-auto">
+              Mostrando {filteredLlamadas.length} de {llamadas.length} llamadas
+            </span>
+          )}
+        </div>
+      </div>
+
+      {kpisVivos && (
         <>
-          {/* KPI CARDS - HU17 */}
+          {/* KPI CARDS - HU17 + HU18 (reactivos a filtros) */}
           <div className="grid grid-cols-2 gap-4 mb-4 sm:grid-cols-4">
             {[
-              { label: 'Llamadas Recibidas',  value: kpis.kpis_globales.total_llamadas_recibidas,  icon: <Phone className="w-6 h-6 text-blue-500" />,   bg: 'bg-blue-50 border-blue-100' },
-              { label: 'Llamadas Auditadas',  value: kpis.kpis_globales.total_llamadas_auditadas,  icon: <ShieldCheck className="w-6 h-6 text-green-500" />, bg: 'bg-green-50 border-green-100' },
-              { label: 'Cobertura SLA',       value: kpis.kpis_globales.cobertura_porcentaje + '%',icon: <BarChart2 className="w-6 h-6 text-purple-500" />, bg: 'bg-purple-50 border-purple-100' },
-              { label: 'Calidad Promedio',    value: kpis.kpis_globales.calidad_promedio + ' pts', icon: <Star className="w-6 h-6 text-yellow-500" />,  bg: 'bg-yellow-50 border-yellow-100' },
+              { label: 'Llamadas Recibidas',  value: kpisVivos.kpis_globales.total_llamadas_recibidas,  icon: <Phone className="w-6 h-6 text-blue-500" />,   bg: 'bg-blue-50 border-blue-100' },
+              { label: 'Llamadas Auditadas',  value: kpisVivos.kpis_globales.total_llamadas_auditadas,  icon: <ShieldCheck className="w-6 h-6 text-green-500" />, bg: 'bg-green-50 border-green-100' },
+              { label: 'Cobertura SLA',       value: kpisVivos.kpis_globales.cobertura_porcentaje + '%',icon: <BarChart2 className="w-6 h-6 text-purple-500" />, bg: 'bg-purple-50 border-purple-100' },
+              { label: 'Calidad Promedio',    value: kpisVivos.kpis_globales.calidad_promedio + ' pts', icon: <Star className="w-6 h-6 text-yellow-500" />,  bg: 'bg-yellow-50 border-yellow-100' },
             ].map((card) => (
               <div key={card.label} className={`rounded-xl border p-4 flex items-center gap-4 shadow-sm ${card.bg}`}>
                 <div className="flex-shrink-0">{card.icon}</div>
@@ -99,11 +260,13 @@ export default function Dashboard() {
           </div>
 
           {/* DISTRIBUCION ESTATUS */}
-          {Object.keys(kpis.distribucion_estatus || {}).length > 0 && (
+          {Object.keys(kpisVivos.distribucion_estatus || {}).length > 0 && (
             <div className="mb-6 bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Distribucion por Estatus IA</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                Distribucion por Estatus IA {hayFiltros && <span className="text-blue-400">(filtrado)</span>}
+              </p>
               <div className="flex flex-wrap gap-2">
-                {Object.entries(kpis.distribucion_estatus).map(([estatus, cantidad]) => (
+                {Object.entries(kpisVivos.distribucion_estatus).map(([estatus, cantidad]) => (
                   <span key={estatus} className="px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-700">
                     {estatus}: <span className="font-bold">{cantidad}</span>
                   </span>
@@ -116,27 +279,19 @@ export default function Dashboard() {
 
       {/* TABLA */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 bg-gray-50 flex gap-4">
-          <div className="relative flex-1 max-w-sm">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <div className="relative max-w-sm">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-4 w-4 text-gray-400" />
             </div>
             <input
               type="text"
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm"
-              placeholder="Buscar por ID o Cliente..."
+              placeholder="Buscar por ID o empresa..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <select
-            className="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-            value={filterEmpresa}
-            onChange={(e) => setFilterEmpresa(e.target.value)}
-          >
-            <option value="">Todas las Empresas</option>
-            {uniqueEmpresas.map(e => <option key={e} value={e}>{e}</option>)}
-          </select>
         </div>
 
         <div className="overflow-x-auto">
