@@ -653,6 +653,18 @@ def desactivar_usuario(
 
 
 # =============================================================================
+# HU03 - LISTAR CLIENTES (para el selector de empresa en la gestión de usuarios)
+# =============================================================================
+@app.get("/api/v1/clientes", summary="HU03: Listar empresas clientes (admin)")
+def listar_clientes(
+    db: Session = Depends(get_session),
+    _: Usuario = Depends(require_admin),
+):
+    clientes = db.exec(select(Cliente)).all()
+    return [{"id": c.id, "nombre_empresa": c.nombre_empresa} for c in clientes]
+
+
+# =============================================================================
 # HU01 - SEED: Crear admin inicial si no existe (util para primer arranque)
 # =============================================================================
 @app.post("/api/v1/auth/seed-admin", summary="HU01: Crear admin inicial (solo si no hay usuarios)")
